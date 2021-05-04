@@ -1,9 +1,17 @@
 package net.browny.server;
 
-import net.browny.server.connection.network.SocketAccepter;
+import net.browny.server.connection.network.SessionTestAccepter;
 import net.browny.server.utility.Config;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
+
+import static org.apache.log4j.Level.INFO;
 
 public class Server {
     final Logger logger = LogManager.getRootLogger();
@@ -14,19 +22,29 @@ public class Server {
     }
 
     private void init(String[] args){
-        logger.info("Browny Server [Starting]");
+        logger.info("Browny Server [Start]");
         long startNow = System.currentTimeMillis();
-        logger.info("Config.json [Loading]");
         Config.init();
-        logger.info("Config.json [Loaded] in " + (System.currentTimeMillis() - startNow) + "ms");
-        logger.info("Binding to Socket [Loading]");
-        Runnable sockAccepter = new SocketAccepter();
+        logger.info("Config.json loaded in " + (System.currentTimeMillis() - startNow) + "ms");
+        Runnable sockAccepter = new SessionTestAccepter();
         Thread sockThread = new Thread(sockAccepter);
         sockThread.start();
-        logger.info("Binded to " + Config.getSocketIp() + ":" + Config.getSocketPort() + " [Loaded] in " + (System.currentTimeMillis() - startNow) + "ms");
+        logger.info("Binded to " + Config.getSocketIp() + ":" + Config.getSocketPort() + " in " + (System.currentTimeMillis() - startNow) + "ms");
     }
 
     public static void main(String[] args) {
+        try{
+            Properties props = new Properties();
+            props.load(new FileInputStream("log4j.properties"));
+            PropertyConfigurator.configure(props);
+        }catch (FileNotFoundException ex){
+            System.out.println(ex.getMessage());
+            System.exit(-1);
+        }catch (IOException ex){
+            System.out.println(ex.getMessage());
+            System.exit(-1);
+        }
+
         Server.getInstance().init(args);
     }
 }
