@@ -1,6 +1,6 @@
-package net.browny.server.Connection.network;
+package net.browny.server.connection.network;
 
-import net.browny.server.Utility.Config;
+import net.browny.server.utility.Config;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

@@ -1,7 +1,7 @@
 package net.browny.server;
 
-import net.browny.server.Connection.network.SocketAccepter;
-import net.browny.server.Utility.Config;
+import net.browny.server.connection.network.SocketAccepter;
+import net.browny.server.utility.Config;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

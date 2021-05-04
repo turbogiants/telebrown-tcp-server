@@ -1,4 +1,4 @@
-package net.browny.server.Utility;
+package net.browny.server.utility;
 
 // logger
 import org.apache.log4j.Logger;

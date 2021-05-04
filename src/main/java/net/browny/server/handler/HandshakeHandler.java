@@ -1,4 +1,4 @@
-package net.browny.server.Handler;
+package net.browny.server.handler;
 
 public class HandshakeHandler {
 

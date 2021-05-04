@@ -1,4 +1,4 @@
-package net.browny.server.Connection.network;
+package net.browny.server.connection.network;
 
 
 import io.netty.buffer.ByteBuf;
