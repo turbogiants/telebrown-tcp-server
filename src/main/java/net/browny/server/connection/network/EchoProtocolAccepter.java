@@ -14,7 +14,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-public class SessionTestAccepter implements Runnable {
+public class EchoProtocolAccepter implements Runnable {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
 
@@ -29,7 +29,7 @@ public class SessionTestAccepter implements Runnable {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new SessionTestHandler());
+                            ch.pipeline().addLast(new EchoProtocolHandler());
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)

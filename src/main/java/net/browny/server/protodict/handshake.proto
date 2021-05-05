@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package handshake;
+
+message SYN{
+  sint32 SeqX = 1;
+}
+
+message ACK{
+  sint32 SeqY = 1;
+}
+

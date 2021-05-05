@@ -1,6 +1,6 @@
 package net.browny.server;
 
-import net.browny.server.connection.network.SessionTestAccepter;
+import net.browny.server.connection.network.EchoProtocolAccepter;
 import net.browny.server.utility.Config;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -10,8 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
-
-import static org.apache.log4j.Level.INFO;
 
 public class Server {
     final Logger logger = LogManager.getRootLogger();
@@ -26,9 +24,7 @@ public class Server {
         long startNow = System.currentTimeMillis();
         Config.init();
         logger.info("Config.json loaded in " + (System.currentTimeMillis() - startNow) + "ms");
-        Runnable sockAccepter = new SessionTestAccepter();
-        Thread sockThread = new Thread(sockAccepter);
-        sockThread.start();
+        new Thread(new EchoProtocolAccepter()).start(); // test protocol
         logger.info("Binded to " + Config.getSocketIp() + ":" + Config.getSocketPort() + " in " + (System.currentTimeMillis() - startNow) + "ms");
     }
 
