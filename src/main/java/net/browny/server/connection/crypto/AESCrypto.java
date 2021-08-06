@@ -1,7 +1,7 @@
 package net.browny.server.connection.crypto;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;

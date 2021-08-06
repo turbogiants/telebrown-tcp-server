@@ -1,7 +1,8 @@
 package net.browny.server.utility;
 
 // logger
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 // end logger
 
 // javax.json
@@ -20,7 +21,7 @@ import java.util.Arrays;
 public class Config {
 
     public static final String CONFIG_JSON = "Config.json";
-    private static final Logger LOGGER = Logger.getLogger(Config.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
     // CONFIG DEFAULT VALUES
     private static String databaseIp = "127.0.0.1";

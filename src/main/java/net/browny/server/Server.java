@@ -2,14 +2,14 @@ package net.browny.server;
 
 import net.browny.server.connection.network.EchoProtocolAccepter;
 import net.browny.server.utility.Config;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
 
 public class Server {
     final Logger logger = LogManager.getRootLogger();
@@ -29,14 +29,14 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        try{
-            Properties props = new Properties();
-            props.load(new FileInputStream("log4j.properties"));
-            PropertyConfigurator.configure(props);
-        } catch (IOException ex){
-            System.out.println(ex.getMessage());
-            System.exit(-1);
-        }
+
+        LoggerContext context = (LoggerContext) LogManager.getContext(false);
+        File file = new File("log4j2.xml");
+        context.setConfigLocation(file.toURI());
+
+//            Properties props = new Properties();
+//            props.load(new FileInputStream("log4j.properties"));
+//            PropertyConfigurator.configure(props);
 
         Server.getInstance().init(args);
     }
