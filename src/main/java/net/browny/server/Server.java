@@ -33,10 +33,7 @@ public class Server {
             Properties props = new Properties();
             props.load(new FileInputStream("log4j.properties"));
             PropertyConfigurator.configure(props);
-        }catch (FileNotFoundException ex){
-            System.out.println(ex.getMessage());
-            System.exit(-1);
-        }catch (IOException ex){
+        } catch (IOException ex){
             System.out.println(ex.getMessage());
             System.exit(-1);
         }

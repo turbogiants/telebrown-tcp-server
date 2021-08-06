@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package testKeyExchange;
+
+message test_Auth{
+  uint64 keyID = 1;
+  uint64 publicKey = 2;
+  uint64 identityKey = 3;
+}
+
+message ACK{
+  sint32 SeqY = 1;
+}
+
