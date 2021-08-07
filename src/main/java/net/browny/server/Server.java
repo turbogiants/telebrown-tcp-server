@@ -1,6 +1,7 @@
 package net.browny.server;
 
 import net.browny.server.connection.network.EchoProtocolAccepter;
+import net.browny.server.connection.network.HandShakeProtocolAcceptor;
 import net.browny.server.utility.Config;
 
 import java.io.File;
@@ -12,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 
 public class Server {
-    final Logger logger = LogManager.getRootLogger();
+    public final Logger logger = LogManager.getRootLogger();
     private static final Server server = new Server();
 
     public static Server getInstance() {
@@ -24,20 +25,20 @@ public class Server {
         long startNow = System.currentTimeMillis();
         Config.init();
         logger.info("Config.json loaded in " + (System.currentTimeMillis() - startNow) + "ms");
-        new Thread(new EchoProtocolAccepter()).start(); // test protocol
+        new Thread(new HandShakeProtocolAcceptor()).start(); // test protocol
         logger.info("Binded to " + Config.getSocketIp() + ":" + Config.getSocketPort() + " in " + (System.currentTimeMillis() - startNow) + "ms");
+
     }
 
     public static void main(String[] args) {
+        try{
+            LoggerContext context = (LoggerContext) LogManager.getContext(false);
+            File file = new File("log4j2.xml");
+            context.setConfigLocation(file.toURI());
+            Server.getInstance().init(args);
+        }catch(Exception e){
+             Server.getInstance().logger.error(e.getStackTrace());
+        }
 
-        LoggerContext context = (LoggerContext) LogManager.getContext(false);
-        File file = new File("log4j2.xml");
-        context.setConfigLocation(file.toURI());
-
-//            Properties props = new Properties();
-//            props.load(new FileInputStream("log4j.properties"));
-//            PropertyConfigurator.configure(props);
-
-        Server.getInstance().init(args);
     }
 }

@@ -3,6 +3,7 @@ package net.browny.server.client;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
 import net.browny.server.connection.crypto.AESCrypto;
+import net.browny.server.connection.packet.Packet;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -10,7 +11,7 @@ public class NettyClient {
 
     public static final AttributeKey<AESCrypto> CRYPTO_KEY = AttributeKey.valueOf("S");
 
-    public static final AttributeKey<AESCrypto> CLIENT_KEY = AttributeKey.valueOf("C");
+    public static final AttributeKey<NettyClient> CLIENT_KEY = AttributeKey.valueOf("C");
 
     private int storedLength = -1;
 
@@ -18,14 +19,10 @@ public class NettyClient {
 
     private final ReentrantLock lock;
 
-    private byte[] sIV;
-    private byte[] rIV;
 
     private NettyClient() {
         this.channel = null;
         this.lock = null;
-        this.sIV = null;
-        this.rIV = null;
     }
 
     public NettyClient(Channel channel) {
@@ -41,36 +38,28 @@ public class NettyClient {
         storedLength = val;
     }
 
-    public final byte[] getSendIV() {
-        return sIV;
-    }
-
-    public final byte[] getRecvIV() {
-        return rIV;
-    }
-
-    public final void setSendIV(byte[] IV) {
-        this.sIV = IV;
-    }
-
-    public final void setRecvIV(byte[] IV) {
-        this.rIV = IV;
-    }
-
-
     public void close() {
+        assert channel != null;
         channel.close();
     }
 
     public String getIP() {
+        assert channel != null;
         return channel.remoteAddress().toString().split(":")[0].substring(1);
     }
 
     public final void acquireEncoderState() {
+        assert lock != null;
         lock.lock();
     }
 
     public final void releaseEncodeState() {
+        assert lock != null;
         lock.unlock();
+    }
+
+    public void write(Packet msg) {
+        assert channel != null;
+        channel.writeAndFlush(msg);
     }
 }
