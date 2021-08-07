@@ -8,7 +8,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.KeySpec;
 
@@ -17,10 +16,9 @@ public final class AESCrypto {
     private static final Logger LOGGER = LogManager.getRootLogger();
 
     private Cipher cipher;
-    private IvParameterSpec IV;
     private SecretKey sKey;
 
-    private static final int PASS_KEY_ITER = 1024;
+    private static final int PASS_KEY_ITER = 4096;
     private static final char[] PASS_KEY = {
             0x4b04, 0x481d, 0x4c77, 0xd5ef, 0x136f, 0x2eff, 0x2d7e, 0xbe6e, 0xc89c, 0xb9b7, 0xe818, 0xc60a, 0xea96, 0x1751, 0xae47, 0x45fa,
             0x744, 0xf274, 0xf4ad, 0x1a0a, 0x2871, 0xf053, 0x539c, 0x3044, 0x2e8e, 0x7201, 0x3b55,  0x4757, 0x79f7, 0xaf9e, 0x7f9b, 0x65ae,
@@ -62,23 +60,23 @@ public final class AESCrypto {
 
 
 
-    public static void main(String[] args) {
-        String plainText = "저 3줄에 자기가 원하는 옵션이 나올 확률이 참...저 3줄에 자기가 원하는 옵션이 나올 확률이 참...";
-        System.out.println("BaseText: " + plainText);
-        System.out.println("SHA-256: " + getSha256(plainText.getBytes(StandardCharsets.UTF_8)));
-        AESCrypto brownyCrypto = new AESCrypto();
-        try {
-            byte[] enc = brownyCrypto.encrypt(plainText.getBytes(StandardCharsets.UTF_8));
-            System.out.println("EncText: " + new String(enc));
-            System.out.println("SHA-256: " + getSha256(enc));
-            byte[] dec = brownyCrypto.decrypt(enc);
-            plainText = new String(dec, StandardCharsets.UTF_8);
-            System.out.println("DecText: " + plainText);
-            System.out.println("SHA-256: " + getSha256(dec));
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void main(String[] args) {
+//        String plainText = "저 3줄에 자기가 원하는 옵션이 나올 확률이 참...저 3줄에 자기가 원하는 옵션이 나올 확률이 참...";
+//        System.out.println("BaseText: " + plainText);
+//        System.out.println("SHA-256: " + getSha256(plainText.getBytes(StandardCharsets.UTF_8)));
+//        AESCrypto brownyCrypto = new AESCrypto();
+//        try {
+//            byte[] enc = brownyCrypto.encrypt(plainText.getBytes(StandardCharsets.UTF_8));
+//            System.out.println("EncText: " + new String(enc));
+//            System.out.println("SHA-256: " + getSha256(enc));
+//            byte[] dec = brownyCrypto.decrypt(enc);
+//            plainText = new String(dec, StandardCharsets.UTF_8);
+//            System.out.println("DecText: " + plainText);
+//            System.out.println("SHA-256: " + getSha256(dec));
+//        } catch (GeneralSecurityException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public static String getSha256(byte[] input)
     {
@@ -100,7 +98,6 @@ public final class AESCrypto {
     public AESCrypto(){
         try {
             this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            this.IV = generateIV();
             this.sKey = generateKey();
 
         } catch (GeneralSecurityException e) {
@@ -114,22 +111,22 @@ public final class AESCrypto {
         return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
     }
 
-    protected byte[] encrypt(byte[] byteToEncrypt) throws GeneralSecurityException {
-        this.cipher.init(Cipher.ENCRYPT_MODE, this.sKey, this.IV);
+    protected byte[] encrypt(byte[] byteToEncrypt, IvParameterSpec IV) throws GeneralSecurityException {
+        this.cipher.init(Cipher.ENCRYPT_MODE, this.sKey, IV);
         return this.cipher.doFinal(byteToEncrypt);
     }
 
-    protected byte[] decrypt(byte[] byteToDecrypt) throws GeneralSecurityException {
-        this.cipher.init(Cipher.DECRYPT_MODE, this.sKey, this.IV);
+    protected byte[] decrypt(byte[] byteToDecrypt, IvParameterSpec IV) throws GeneralSecurityException {
+        this.cipher.init(Cipher.DECRYPT_MODE, this.sKey, IV);
         return this.cipher.doFinal(byteToDecrypt);
 
     }
 
-    private IvParameterSpec generateIV() throws GeneralSecurityException {
+    public static byte[] generateIV() throws GeneralSecurityException {
         SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
         byte[] byteIV = new byte[16];
         random.nextBytes(byteIV);
-        return new IvParameterSpec(byteIV);
+        return byteIV;
     }
 
 

@@ -16,15 +16,17 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
 
 import static net.browny.server.client.NettyClient.CLIENT_KEY;
 
-public class HandShakeProtocolAcceptor implements Runnable {
+public class HandshakeHandler implements Runnable {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
     public static Map<String, Channel> channelPool = new HashMap<>();
+
     @Override
     public void run() {
 
@@ -39,15 +41,20 @@ public class HandShakeProtocolAcceptor implements Runnable {
 
                 @Override
                 protected void initChannel(SocketChannel socketChannel) {
-                    socketChannel.pipeline().addLast(new PacketDecoder(), new BrownyProtocolHandler(), new PacketEncoder());
+                    socketChannel.pipeline().addLast(new PacketDecoder(), new PacketEncoder(), new SessionHandler());
 
-                    Client client = new Client(socketChannel);
-                    Packet packet = new Packet("Happy Feet".getBytes());
-                    client.write(packet);
+                    try {
+                        byte[] sIV = AESCrypto.generateIV();
+                        byte[] rIV = AESCrypto.generateIV();
 
-                    channelPool.put(client.getIP(), socketChannel);
-                    socketChannel.attr(CLIENT_KEY).set(client);
-                    socketChannel.attr(Client.CRYPTO_KEY).set(new AESCrypto());
+                        Client client = new Client(socketChannel, sIV, rIV);
+                        channelPool.put(client.getIP(), socketChannel);
+                        socketChannel.attr(CLIENT_KEY).set(client);
+                        socketChannel.attr(Client.CRYPTO_KEY).set(new AESCrypto());
+
+                    } catch (GeneralSecurityException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             });

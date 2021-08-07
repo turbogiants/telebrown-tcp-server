@@ -1,6 +1,7 @@
 package net.browny.server.connection.packet;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class InPacket extends Packet {
 
@@ -9,6 +10,10 @@ public class InPacket extends Packet {
     public InPacket(ByteBuf data) {
         super(data.array());
         this.byteBuf = byteBuf.copy();
+    }
+
+    public InPacket() {
+        this(Unpooled.buffer());
     }
 
     @Override

@@ -1,16 +1,14 @@
 package net.browny.server.connection.network;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import net.browny.server.connection.packet.InPacket;
 
-public class SessionHandler  {
 
-    private static final Map<Integer, Method> handlers = new HashMap<>();
+public class SessionHandler extends SimpleChannelInboundHandler<InPacket> {
 
-    public static void init(){
-        long start = System.currentTimeMillis();
+    @Override
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, InPacket inPacket) throws Exception {
 
     }
-
 }

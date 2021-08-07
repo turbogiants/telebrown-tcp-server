@@ -1,13 +1,10 @@
 package net.browny.server;
 
-import net.browny.server.connection.network.EchoProtocolAccepter;
-import net.browny.server.connection.network.HandShakeProtocolAcceptor;
+import net.browny.server.connection.network.HandshakeHandler;
 import net.browny.server.utility.Config;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -25,7 +22,7 @@ public class Server {
         long startNow = System.currentTimeMillis();
         Config.init();
         logger.info("Config.json loaded in " + (System.currentTimeMillis() - startNow) + "ms");
-        new Thread(new HandShakeProtocolAcceptor()).start(); // test protocol
+        new Thread(new HandshakeHandler()).start(); // test protocol
         logger.info("Binded to " + Config.getSocketIp() + ":" + Config.getSocketPort() + " in " + (System.currentTimeMillis() - startNow) + "ms");
 
     }
