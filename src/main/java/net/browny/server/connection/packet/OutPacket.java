@@ -9,36 +9,39 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 
-public class ServerPacket extends Packet {
+public class OutPacket extends Packet {
     private ByteBuf byteBuf;
     private boolean loopback = false;
-    private boolean encryptedByShanda = false;
+
+    //todo: zlib compression
+    private boolean compression = false;
+
     private short op;
     private static final Logger LOGGER = LogManager.getRootLogger();
 
-    public ServerPacket(short op) {
+    public OutPacket(short op) {
         super(new byte[]{});
         byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
         encodeShort(op);
         this.op = op;
     }
 
-    public ServerPacket(int op) {
+    public OutPacket(int op) {
         this((short) op);
     }
 
-    public ServerPacket() {
+    public OutPacket() {
         super(new byte[]{});
         byteBuf = ByteBufAllocator.DEFAULT.buffer();
     }
 
-    public ServerPacket(byte[] data) {
+    public OutPacket(byte[] data) {
         super(data);
         byteBuf = ByteBufAllocator.DEFAULT.buffer();
         encodeArr(data);
     }
 
-    public ServerPacket(PacketEnum header) {
+    public OutPacket(PacketEnum header) {
         this(header.getPacketID());
     }
 
@@ -137,7 +140,7 @@ public class ServerPacket extends Packet {
 
     @Override
     public Packet clone() {
-        return new ServerPacket(getData());
+        return new OutPacket(getData());
     }
 
     @Override
@@ -147,10 +150,6 @@ public class ServerPacket extends Packet {
 
     public boolean isLoopback() {
         return loopback;
-    }
-
-    public boolean isEncryptedByShanda() {
-        return encryptedByShanda;
     }
 
     @Override

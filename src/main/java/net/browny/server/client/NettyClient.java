@@ -6,6 +6,7 @@ import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
 import net.browny.server.connection.packet.Packet;
 
+import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class NettyClient {
@@ -14,9 +15,9 @@ public class NettyClient {
 
     public static final AttributeKey<NettyClient> CLIENT_KEY = AttributeKey.valueOf("C");
 
-    private byte[] sIV;
+    private byte[] serverIV;
 
-    private byte[] rIV;
+    private byte[] clientIV;
 
     private int storedLength = -1;
 
@@ -32,10 +33,10 @@ public class NettyClient {
         r = null;
     }
 
-    public NettyClient(Channel c, byte[] sIV, byte[] rIV) {
+    public NettyClient(Channel c, byte[] serverIV, byte[] clientIV) {
         ch = c;
-        this.sIV = sIV;
-        this.rIV = rIV;
+        this.serverIV = serverIV;
+        this.clientIV = clientIV;
         r = new InPacket();
         lock = new ReentrantLock(true); // note: lock is fair to ensure logical sequence is maintained server-side
     }
@@ -52,20 +53,28 @@ public class NettyClient {
         storedLength = val;
     }
 
-    public final byte[] getSendIV() {
-        return sIV;
+    public final byte[] getServerIV() {
+        return serverIV;
     }
 
-    public final byte[] getRecvIV() {
-        return rIV;
+    public final byte[] getClientIV() {
+        return clientIV;
     }
 
-    public final void setSendIV(byte[] sIV) {
-        this.sIV = sIV;
+    public boolean checkClientIV(byte[] rIV){
+        return Arrays.equals(this.clientIV, rIV);
     }
 
-    public final void setRecvIV(byte[] rIV) {
-        this.rIV = rIV;
+    public boolean checkServerIV(byte[] sIV){
+        return Arrays.equals(this.serverIV, sIV);
+    }
+
+    public final void setServerIV(byte[] serverIV) {
+        this.serverIV = serverIV;
+    }
+
+    public final void setClientIV(byte[] clientIV) {
+        this.clientIV = clientIV;
     }
 
 

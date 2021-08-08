@@ -10,8 +10,8 @@ public class Client extends NettyClient {
     private Lock lock;
     private Channel channelInstance;
 
-    public Client(Channel channel, byte[] sIV, byte[] rIV) {
-        super(channel, sIV, rIV);
+    public Client(Channel channel, byte[] serverIV, byte[] clientIV) {
+        super(channel, serverIV, clientIV);
         lock = new ReentrantLock(true);
     }
 

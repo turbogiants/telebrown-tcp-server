@@ -2,16 +2,18 @@ package net.browny.server.connection.packet;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ReplayingDecoder;
+import io.netty.handler.codec.ByteToMessageDecoder;
 import net.browny.server.client.NettyClient;
 import net.browny.server.connection.crypto.AESCrypto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.crypto.spec.IvParameterSpec;
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 
-public class PacketDecoder extends ReplayingDecoder<Void> {
+public class PacketDecoder extends ByteToMessageDecoder {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
 
@@ -19,29 +21,38 @@ public class PacketDecoder extends ReplayingDecoder<Void> {
     private int length;
 
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
-
-
+    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, List<Object> out) {
         NettyClient nettyClient = channelHandlerContext.channel().attr(NettyClient.CLIENT_KEY).get();
         AESCrypto aesCrypto = channelHandlerContext.channel().attr(NettyClient.CRYPTO_KEY).get();
         if (nettyClient != null) {
-//            // todo: IV checking
-//            if (nettyClient.getStoredLength() == -1) {
-//                //todo: Replay Masking
-//                LOGGER.info("[Packet Decoder] Testing");
-//            }
-            // retrieved example from https://netty.io/4.1/api/io/netty/handler/codec/ReplayingDecoder.html
-            byte[] IV = nettyClient.getRecvIV();
-            if (!readLength) {
-                length = byteBuf.readInt();
-                readLength = true;
-                checkpoint();
+            if (nettyClient.getStoredLength() == -1) {
+                if (in.readableBytes() >= 16) {
+                    ByteBuf iv = in.readBytes(16);
+                    int length = in.readInt();
+                    if (nettyClient.checkClientIV(iv.array())) {
+                        LOGGER.error(String.format("[PacketDecoder] | Incorrect IV! Dropping client %s.", nettyClient.getIP()));
+                        nettyClient.close();
+                        return;
+                    }
+                    nettyClient.setStoredLength(length);
+                } else {
+                    return;
+                }
             }
-            if (readLength) {
-                ByteBuf frame = byteBuf.readBytes(length);
-                readLength = false;
-                checkpoint();
-                list.add(frame);
+            if (in.readableBytes() >= nettyClient.getStoredLength()) {
+                byte[] dec = new byte[nettyClient.getStoredLength()];
+                in.readBytes(dec);
+                nettyClient.setStoredLength(-1);
+
+                try {
+                    byte[] iv = nettyClient.getClientIV();
+                    dec = aesCrypto.decrypt(dec, new IvParameterSpec(iv));
+                    nettyClient.setClientIV(AESCrypto.generateIV());
+                } catch (GeneralSecurityException e) {
+                    e.printStackTrace();
+                }
+                InPacket inPacket = new InPacket(dec);
+                out.add(inPacket);
             }
         }
     }

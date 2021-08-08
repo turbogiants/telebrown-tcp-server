@@ -6,6 +6,7 @@ import net.browny.server.connection.crypto.AESCrypto;
 import net.browny.server.connection.packet.Packet;
 import net.browny.server.connection.packet.PacketDecoder;
 import net.browny.server.connection.packet.PacketEncoder;
+import net.browny.server.connection.packet.definition.Handshake;
 import net.browny.server.utility.Config;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -17,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,19 +43,24 @@ public class HandshakeHandler implements Runnable {
 
                 @Override
                 protected void initChannel(SocketChannel socketChannel) {
-                    socketChannel.pipeline().addLast(new PacketDecoder(), new PacketEncoder(), new SessionHandler());
+                    socketChannel.pipeline().addLast(new PacketDecoder(), new PacketEncoder());
 
                     try {
-                        byte[] sIV = AESCrypto.generateIV();
-                        byte[] rIV = AESCrypto.generateIV();
+                        byte[] serverIV = AESCrypto.generateIV();
+                        byte[] clientIV = AESCrypto.generateIV();
 
-                        Client client = new Client(socketChannel, sIV, rIV);
+                        Client client = new Client(socketChannel, serverIV, clientIV);
+                        LOGGER.info(String.format("serverIV for Client %s =", client.getIP()) + Arrays.toString(serverIV));
+                        LOGGER.info(String.format("clientIV for Client %s =", client.getIP()) + Arrays.toString(clientIV));
+
+                        client.write(Handshake.initializeCommunication(serverIV, clientIV));
+
                         channelPool.put(client.getIP(), socketChannel);
                         socketChannel.attr(CLIENT_KEY).set(client);
                         socketChannel.attr(Client.CRYPTO_KEY).set(new AESCrypto());
 
                     } catch (GeneralSecurityException e) {
-                        e.printStackTrace();
+                        LOGGER.error(e.getStackTrace());
                     }
                 }
 

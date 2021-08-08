@@ -8,6 +8,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.KeySpec;
 
@@ -58,25 +59,24 @@ public final class AESCrypto {
             0x33, 0x4f, 0x59, (byte)0x9f, 0x4b, (byte)0xc2, (byte)0xd6, 0x5e, (byte)0xed, (byte)0x83, (byte)0xfd, 0x4c, (byte)0xc8, 0x47, 0x6d, 0x3e,
     };
 
-
-
-//    public static void main(String[] args) {
-//        String plainText = "저 3줄에 자기가 원하는 옵션이 나올 확률이 참...저 3줄에 자기가 원하는 옵션이 나올 확률이 참...";
-//        System.out.println("BaseText: " + plainText);
-//        System.out.println("SHA-256: " + getSha256(plainText.getBytes(StandardCharsets.UTF_8)));
-//        AESCrypto brownyCrypto = new AESCrypto();
-//        try {
-//            byte[] enc = brownyCrypto.encrypt(plainText.getBytes(StandardCharsets.UTF_8));
-//            System.out.println("EncText: " + new String(enc));
-//            System.out.println("SHA-256: " + getSha256(enc));
-//            byte[] dec = brownyCrypto.decrypt(enc);
-//            plainText = new String(dec, StandardCharsets.UTF_8);
-//            System.out.println("DecText: " + plainText);
-//            System.out.println("SHA-256: " + getSha256(dec));
-//        } catch (GeneralSecurityException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public static void main(String[] args) {
+        String plainText = "저 3줄에 자기가 원하는 옵션이 나올 확률이 참...저 3줄에 자기가 원하는 옵션이 나올 확률이 참...";
+        System.out.println("BaseText: " + plainText);
+        System.out.println("SHA-256: " + getSha256(plainText.getBytes(StandardCharsets.UTF_8)));
+        AESCrypto brownyCrypto = new AESCrypto();
+        try {
+            byte[] iv = AESCrypto.generateIV();
+            byte[] enc = brownyCrypto.encrypt(plainText.getBytes(StandardCharsets.UTF_8), iv);
+            System.out.println("EncText: " + new String(enc));
+            System.out.println("SHA-256: " + getSha256(enc));
+            byte[] dec = brownyCrypto.decrypt(enc, iv);
+            plainText = new String(dec, StandardCharsets.UTF_8);
+            System.out.println("DecText: " + plainText);
+            System.out.println("SHA-256: " + getSha256(dec));
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static String getSha256(byte[] input)
     {
@@ -111,15 +111,22 @@ public final class AESCrypto {
         return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
     }
 
-    protected byte[] encrypt(byte[] byteToEncrypt, IvParameterSpec IV) throws GeneralSecurityException {
+    public byte[] encrypt(byte[] byteToEncrypt, IvParameterSpec IV) throws GeneralSecurityException {
         this.cipher.init(Cipher.ENCRYPT_MODE, this.sKey, IV);
         return this.cipher.doFinal(byteToEncrypt);
     }
 
-    protected byte[] decrypt(byte[] byteToDecrypt, IvParameterSpec IV) throws GeneralSecurityException {
+    public byte[] encrypt(byte[] byteToEncrypt, byte[] IV) throws GeneralSecurityException {
+        return encrypt(byteToEncrypt, new IvParameterSpec(IV));
+    }
+
+    public byte[] decrypt(byte[] byteToDecrypt, IvParameterSpec IV) throws GeneralSecurityException {
         this.cipher.init(Cipher.DECRYPT_MODE, this.sKey, IV);
         return this.cipher.doFinal(byteToDecrypt);
+    }
 
+    public byte[] decrypt(byte[] byteToDecrypt, byte[] IV) throws GeneralSecurityException {
+        return decrypt(byteToDecrypt, new IvParameterSpec(IV));
     }
 
     public static byte[] generateIV() throws GeneralSecurityException {
@@ -128,6 +135,5 @@ public final class AESCrypto {
         random.nextBytes(byteIV);
         return byteIV;
     }
-
 
 }
