@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Appenders>
+	 <RollingFile
+		name="rollingFile"
+		fileName="./log/Server.log"
+		filePattern="./log/Server.%d{yyyy-MM-dd hh_mm}.log.gz"
+		ignoreExceptions="false">
+		<PatternLayout>
+			<Pattern>[%p] [%d{yyyy-MM-dd HH:mm:ss}] %m %n</Pattern>
+		</PatternLayout>
+		<Policies>
+			<OnStartupTriggeringPolicy />
+			<SizeBasedTriggeringPolicy size="10 MB" />
+			<TimeBasedTriggeringPolicy />
+		</Policies>
+		<DefaultRolloverStrategy max="5" />
+	</RollingFile>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="[%p] [%d{yyyy-MM-dd HH:mm:ss}] %m %n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="trace">
+      <AppenderRef ref="rollingFile" level="DEBUG"/>
+      <AppenderRef ref="STDOUT" level="INFO"/>
+    </Root>
+  </Loggers>
+</Configuration>

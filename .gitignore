@@ -71,7 +71,9 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 # Specific .gitignore for this project
-/Config.json
+/Config_Server.json
+/Config_Client.json
 /bin/
 /target/
-/log/
+/Server_Log/
+/Client_Log/

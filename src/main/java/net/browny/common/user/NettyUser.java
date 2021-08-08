@@ -9,11 +9,11 @@ import net.browny.server.connection.packet.Packet;
 import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class NettyClient {
+public class NettyUser {
 
     public static final AttributeKey<AESCrypto> CRYPTO_KEY = AttributeKey.valueOf("A");
 
-    public static final AttributeKey<NettyClient> CLIENT_KEY = AttributeKey.valueOf("C");
+    public static final AttributeKey<NettyUser> CLIENT_KEY = AttributeKey.valueOf("C");
 
     private byte[] serverIV;
 
@@ -27,13 +27,13 @@ public class NettyClient {
 
     private final InPacket r;
 
-    private NettyClient() {
+    private NettyUser() {
         ch = null;
         lock = null;
         r = null;
     }
 
-    public NettyClient(Channel c, byte[] serverIV, byte[] clientIV) {
+    public NettyUser(Channel c, byte[] serverIV, byte[] clientIV) {
         ch = c;
         this.serverIV = serverIV;
         this.clientIV = clientIV;

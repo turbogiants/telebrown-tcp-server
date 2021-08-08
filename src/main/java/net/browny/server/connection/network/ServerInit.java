@@ -1,9 +1,8 @@
-package net.browny.server.connection.network;
+package net.browny.server.connection.handler;
 
 import io.netty.channel.*;
-import net.browny.server.client.Client;
+import net.browny.server.client.User;
 import net.browny.server.connection.crypto.AESCrypto;
-import net.browny.server.connection.packet.Packet;
 import net.browny.server.connection.packet.PacketDecoder;
 import net.browny.server.connection.packet.PacketEncoder;
 import net.browny.server.connection.packet.definition.Handshake;
@@ -22,7 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static net.browny.server.client.NettyClient.CLIENT_KEY;
+import static net.browny.server.client.NettyUser.CLIENT_KEY;
 
 public class HandshakeHandler implements Runnable {
 
@@ -43,21 +42,21 @@ public class HandshakeHandler implements Runnable {
 
                 @Override
                 protected void initChannel(SocketChannel socketChannel) {
-                    socketChannel.pipeline().addLast(new PacketDecoder(), new PacketEncoder());
+                    socketChannel.pipeline().addLast(new PacketDecoder(), new PacketEncoder(), new SessionHandler());
 
                     try {
                         byte[] serverIV = AESCrypto.generateIV();
                         byte[] clientIV = AESCrypto.generateIV();
 
-                        Client client = new Client(socketChannel, serverIV, clientIV);
-                        LOGGER.info(String.format("serverIV for Client %s =", client.getIP()) + Arrays.toString(serverIV));
-                        LOGGER.info(String.format("clientIV for Client %s =", client.getIP()) + Arrays.toString(clientIV));
+                        User user = new User(socketChannel, serverIV, clientIV);
+                        LOGGER.info(String.format("serverIV for Client %s =", user.getIP()) + Arrays.toString(serverIV));
+                        LOGGER.info(String.format("clientIV for Client %s =", user.getIP()) + Arrays.toString(clientIV));
 
-                        client.write(Handshake.initializeCommunication(serverIV, clientIV));
+                        user.write(Handshake.initializeCommunication(serverIV, clientIV));
 
-                        channelPool.put(client.getIP(), socketChannel);
-                        socketChannel.attr(CLIENT_KEY).set(client);
-                        socketChannel.attr(Client.CRYPTO_KEY).set(new AESCrypto());
+                        channelPool.put(user.getIP(), socketChannel);
+                        socketChannel.attr(CLIENT_KEY).set(user);
+                        socketChannel.attr(User.CRYPTO_KEY).set(new AESCrypto());
 
                     } catch (GeneralSecurityException e) {
                         LOGGER.error(e.getStackTrace());

@@ -5,12 +5,12 @@ import io.netty.channel.Channel;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Client extends NettyClient {
+public class User extends NettyUser {
 
     private Lock lock;
     private Channel channelInstance;
 
-    public Client(Channel channel, byte[] serverIV, byte[] clientIV) {
+    public User(Channel channel, byte[] serverIV, byte[] clientIV) {
         super(channel, serverIV, clientIV);
         lock = new ReentrantLock(true);
     }
