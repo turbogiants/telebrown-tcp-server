@@ -1,7 +1,7 @@
 package net.browny.server;
 
-import net.browny.server.connection.network.HandshakeHandler;
-import net.browny.server.utility.Config;
+import net.browny.server.connection.network.ServerInit;
+import net.browny.common.utility.Config;
 
 import java.io.File;
 
@@ -20,9 +20,9 @@ public class Server {
     private void init(String[] args){
         logger.info("Browny Server [Start]");
         long startNow = System.currentTimeMillis();
-        Config.init();
-        logger.info("Config.json loaded in " + (System.currentTimeMillis() - startNow) + "ms");
-        new Thread(new HandshakeHandler()).start(); // test protocol
+        Config.init(true);
+        logger.info("Configuration loaded in " + (System.currentTimeMillis() - startNow) + "ms");
+        new Thread(new ServerInit()).start();
         logger.info("Binded to " + Config.getSocketIp() + ":" + Config.getSocketPort() + " in " + (System.currentTimeMillis() - startNow) + "ms");
 
     }
@@ -30,7 +30,7 @@ public class Server {
     public static void main(String[] args) {
         try{
             LoggerContext context = (LoggerContext) LogManager.getContext(false);
-            File file = new File("log4j2.xml");
+            File file = new File("log4j2_server.xml");
             context.setConfigLocation(file.toURI());
             Server.getInstance().init(args);
         }catch(Exception e){

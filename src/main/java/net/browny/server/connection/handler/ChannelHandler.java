@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 
 
-public class SessionHandler extends SimpleChannelInboundHandler<InPacket> {
+public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
 
@@ -18,7 +18,7 @@ public class SessionHandler extends SimpleChannelInboundHandler<InPacket> {
         if (e instanceof IOException) {
             LOGGER.info("Client forcibly closed the application.");
         } else {
-            LOGGER.error(e.getStackTrace());
+            LOGGER.error(e.getLocalizedMessage());
         }
         ctx.close(); //we should close the client it if it makes a problem
     }

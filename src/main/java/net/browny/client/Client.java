@@ -1,43 +1,41 @@
 package net.browny.client;
 
+import net.browny.client.connection.network.ClientInit;
+import net.browny.common.utility.Config;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
 
-//To be deleted once all test been done on this small puppy.
-
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import net.browny.client.connection.handler.HandshakeHandler;
-import net.browny.client.connection.packet.HandshakeDecoder;
-import net.browny.server.connection.packet.PacketEncoder;
+import java.io.File;
 
 
-public class TestClient {
+public class Client {
+    public final Logger logger = LogManager.getRootLogger();
+    private static final Client client = new Client();
+
+    public static Client getInstance() {
+        return client;
+    }
+
+    private void init(String[] args){
+        logger.info("Browny Test Client [Start]");
+        long startNow = System.currentTimeMillis();
+        Config.init(false);
+        logger.info("Configuration loaded in " + (System.currentTimeMillis() - startNow) + "ms");
+        new Thread(new ClientInit()).start();
+        logger.info("Client attempting connection to " + Config.getSocketIp() + ":" + Config.getSocketPort() + " in " + (System.currentTimeMillis() - startNow) + "ms");
+
+    }
 
     public static void main(String[] args) {
-        String host = "127.0.0.1";
-        int port = 6100;
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
         try{
-            Bootstrap b = new Bootstrap();
-            b.group(workerGroup);
-            b.channel(NioSocketChannel.class);
-            b.handler(new ChannelInitializer<SocketChannel>(){
-
-                @Override
-                protected void initChannel(SocketChannel socketChannel) {
-                    socketChannel.pipeline().addLast(new HandshakeDecoder(), new PacketEncoder(), new HandshakeHandler());
-                }
-
-            });
-            ChannelFuture f = b.connect(host, port).sync();
-            f.channel().closeFuture().sync();
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            workerGroup.shutdownGracefully();
+            LoggerContext context = (LoggerContext) LogManager.getContext(false);
+            File file = new File("log4j2_client.xml");
+            context.setConfigLocation(file.toURI());
+            Client.getInstance().init(args);
+        }catch(Exception e){
+            Client.getInstance().logger.error(e.getLocalizedMessage());
         }
+
     }
 }

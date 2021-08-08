@@ -3,8 +3,9 @@ package net.browny.server.connection.packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import net.browny.server.client.NettyClient;
-import net.browny.server.connection.crypto.AESCrypto;
+import net.browny.common.crypto.AESCrypto;
+import net.browny.common.packet.InPacket;
+import net.browny.common.user.NettyUser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,34 +23,34 @@ public class PacketDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, List<Object> out) {
-        NettyClient nettyClient = channelHandlerContext.channel().attr(NettyClient.CLIENT_KEY).get();
-        AESCrypto aesCrypto = channelHandlerContext.channel().attr(NettyClient.CRYPTO_KEY).get();
-        if (nettyClient != null) {
-            if (nettyClient.getStoredLength() == -1) {
+        NettyUser nettyUser = channelHandlerContext.channel().attr(NettyUser.CLIENT_KEY).get();
+        AESCrypto aesCrypto = channelHandlerContext.channel().attr(NettyUser.CRYPTO_KEY).get();
+        if (nettyUser != null) {
+            if (nettyUser.getStoredLength() == -1) {
                 if (in.readableBytes() >= 16) {
                     ByteBuf iv = in.readBytes(16);
                     int length = in.readInt();
-                    if (nettyClient.checkClientIV(iv.array())) {
-                        LOGGER.error(String.format("[PacketDecoder] | Incorrect IV! Dropping client %s.", nettyClient.getIP()));
-                        nettyClient.close();
+                    if (nettyUser.checkClientIV(iv.array())) {
+                        LOGGER.error(String.format("[PacketDecoder] | Incorrect IV! Dropping client %s.", nettyUser.getIP()));
+                        nettyUser.close();
                         return;
                     }
-                    nettyClient.setStoredLength(length);
+                    nettyUser.setStoredLength(length);
                 } else {
                     return;
                 }
             }
-            if (in.readableBytes() >= nettyClient.getStoredLength()) {
-                byte[] dec = new byte[nettyClient.getStoredLength()];
+            if (in.readableBytes() >= nettyUser.getStoredLength()) {
+                byte[] dec = new byte[nettyUser.getStoredLength()];
                 in.readBytes(dec);
-                nettyClient.setStoredLength(-1);
+                nettyUser.setStoredLength(-1);
 
                 try {
-                    byte[] iv = nettyClient.getClientIV();
+                    byte[] iv = nettyUser.getClientIV();
                     dec = aesCrypto.decrypt(dec, new IvParameterSpec(iv));
-                    nettyClient.setClientIV(AESCrypto.generateIV());
+                    nettyUser.setClientIV(AESCrypto.generateIV());
                 } catch (GeneralSecurityException e) {
-                    e.printStackTrace();
+                    LOGGER.error(e.getLocalizedMessage());
                 }
                 InPacket inPacket = new InPacket(dec);
                 out.add(inPacket);

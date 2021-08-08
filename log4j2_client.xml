@@ -3,8 +3,8 @@
   <Appenders>
 	 <RollingFile
 		name="rollingFile"
-		fileName="./log/Server.log"
-		filePattern="./log/Server.%d{yyyy-MM-dd hh_mm}.log.gz"
+		fileName="./Client_Log/Client.log"
+		filePattern="./Client_Log/Client.%d{yyyy-MM-dd hh_mm}.log.gz"
 		ignoreExceptions="false">
 		<PatternLayout>
 			<Pattern>[%p] [%d{yyyy-MM-dd HH:mm:ss}] %m %n</Pattern>

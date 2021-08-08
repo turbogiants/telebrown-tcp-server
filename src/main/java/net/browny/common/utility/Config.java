@@ -1,4 +1,4 @@
-package net.browny.server.utility;
+package net.browny.common.utility;
 
 // logger
 import org.apache.logging.log4j.Logger;
@@ -20,7 +20,8 @@ import java.util.Arrays;
 
 public class Config {
 
-    public static final String CONFIG_JSON = "Config.json";
+    public static final String CONFIG_SERVER_JSON = "Config_Server.json";
+    public static final String CONFIG_CLIENT_JSON = "Config_Client.json";
     private static final Logger LOGGER = LogManager.getRootLogger();
 
     // CONFIG DEFAULT VALUES
@@ -32,7 +33,7 @@ public class Config {
     private static Integer socketPort = 6100;
     // END CONFIG DEFAULT VALUES
 
-    private static void CreateConfigFile() {
+    private static void CreateServerConfigFile() {
         JsonObjectBuilder configBuilder = Json.createObjectBuilder();
 
         configBuilder
@@ -44,15 +45,38 @@ public class Config {
                 .add("socketPort", socketPort);
 
         try{
-            FileOutputStream fileOut = new FileOutputStream(CONFIG_JSON);
+            FileOutputStream fileOut = new FileOutputStream(CONFIG_SERVER_JSON);
             JsonWriter jsonWriter = Json.createWriter(fileOut);
             JsonObject configJsonObj = configBuilder.build();
             jsonWriter.writeObject(configJsonObj);
             jsonWriter.close();
         }catch(FileNotFoundException ex){
-            LOGGER.error("Config.json already exists Exception(): " + ex.getMessage());
+            LOGGER.error(CONFIG_SERVER_JSON + " already exists Exception(): " + ex.getMessage());
         }catch(SecurityException ex){
-            LOGGER.error("Cannot write Config.json Exception(): " + ex.getMessage());
+            LOGGER.error("Cannot write "+ CONFIG_SERVER_JSON +" Exception(): " + ex.getMessage());
+        } catch (Exception ex){
+            LOGGER.error("Unknown Error StackTrace(): " + Arrays.toString(ex.getStackTrace()));
+            System.exit(-1);
+        }
+    }
+
+    private static void CreateClientConfigFile() {
+        JsonObjectBuilder configBuilder = Json.createObjectBuilder();
+
+        configBuilder
+                .add("socketIp", socketIp)
+                .add("socketPort", socketPort);
+
+        try{
+            FileOutputStream fileOut = new FileOutputStream(CONFIG_CLIENT_JSON);
+            JsonWriter jsonWriter = Json.createWriter(fileOut);
+            JsonObject configJsonObj = configBuilder.build();
+            jsonWriter.writeObject(configJsonObj);
+            jsonWriter.close();
+        }catch(FileNotFoundException ex){
+            LOGGER.error(CONFIG_CLIENT_JSON + " already exists Exception(): " + ex.getMessage());
+        }catch(SecurityException ex){
+            LOGGER.error("Cannot write "+ CONFIG_CLIENT_JSON +" Exception(): " + ex.getMessage());
         } catch (Exception ex){
             LOGGER.error("Unknown Error StackTrace(): " + Arrays.toString(ex.getStackTrace()));
             System.exit(-1);
@@ -67,31 +91,56 @@ public class Config {
         return socketIp;
     }
 
-    public static void init() {
-        try{
-            FileInputStream fileIn = new FileInputStream(CONFIG_JSON);
+    public static void init(boolean isServer) {
+        if(isServer){
+            try{
+                FileInputStream fileIn = new FileInputStream(CONFIG_SERVER_JSON);
 
-            JsonReader jsonReader = Json.createReader(fileIn);
-            JsonObject jsonObject = jsonReader.readObject();
+                JsonReader jsonReader = Json.createReader(fileIn);
+                JsonObject jsonObject = jsonReader.readObject();
 
-            databaseIp = jsonObject.getString("databaseIp");
-            databasePort = jsonObject.getInt("databasePort");
-            databaseUsername = jsonObject.getString("databaseUsername");
-            databasePassword = jsonObject.getString("databasePassword");
-            socketIp = jsonObject.getString("socketIp");
-            socketPort = jsonObject.getInt("socketPort");
+                databaseIp = jsonObject.getString("databaseIp");
+                databasePort = jsonObject.getInt("databasePort");
+                databaseUsername = jsonObject.getString("databaseUsername");
+                databasePassword = jsonObject.getString("databasePassword");
+                socketIp = jsonObject.getString("socketIp");
+                socketPort = jsonObject.getInt("socketPort");
 
-            jsonReader.close();
-            fileIn.close();
-        } catch (FileNotFoundException ex){
-            LOGGER.warn("Config.json doesn't exists! Creating...");
-            CreateConfigFile();
-        }  catch (IOException ex){
-            LOGGER.error("Server is denied to read the \"Config.json\" file Exception(): " + ex.getMessage());
-            System.exit(-1);
-        } catch (Exception ex){
-            LOGGER.error("Unknown Error StackTrace(): " + Arrays.toString(ex.getStackTrace()));
-            System.exit(-1);
+                jsonReader.close();
+                fileIn.close();
+            } catch (FileNotFoundException ex){
+                LOGGER.warn(CONFIG_SERVER_JSON + " doesn't exists! Creating...");
+                CreateServerConfigFile();
+            }  catch (IOException ex){
+                LOGGER.error("Application is denied to read the \"" + CONFIG_SERVER_JSON +  "\" file Exception(): " + ex.getMessage());
+                System.exit(-1);
+            } catch (Exception ex){
+                LOGGER.error("Unknown Error StackTrace(): " + Arrays.toString(ex.getStackTrace()));
+                System.exit(-1);
+            }
+        } else{
+            try{
+                FileInputStream fileIn = new FileInputStream(CONFIG_CLIENT_JSON);
+
+                JsonReader jsonReader = Json.createReader(fileIn);
+                JsonObject jsonObject = jsonReader.readObject();
+
+                socketIp = jsonObject.getString("socketIp");
+                socketPort = jsonObject.getInt("socketPort");
+
+                jsonReader.close();
+                fileIn.close();
+            } catch (FileNotFoundException ex){
+                System.out.println(CONFIG_CLIENT_JSON + " doesn't exists! Creating...");
+                CreateServerConfigFile();
+            }  catch (IOException ex){
+                System.out.println("Application is denied to read the \"" + CONFIG_SERVER_JSON +  "\" file Exception(): " + ex.getMessage());
+                System.exit(-1);
+            } catch (Exception ex){
+                System.out.println("Unknown Error StackTrace(): " + Arrays.toString(ex.getStackTrace()));
+                System.exit(-1);
+            }
         }
+
     }
 }

@@ -1,6 +1,6 @@
-package net.browny.server.connection.packet.definition;
+package net.browny.common.packet.definition;
 
-import net.browny.server.connection.packet.OutPacket;
+import net.browny.common.packet.OutPacket;
 
 public class Handshake {
 

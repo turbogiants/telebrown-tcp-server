@@ -1,4 +1,4 @@
-package net.browny.server.connection.packet;
+package net.browny.common.packet;
 
 public enum PacketEnum {
     TCS_HANDSHAKE_NOT(0),

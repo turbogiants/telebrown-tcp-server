@@ -1,4 +1,4 @@
-package net.browny.server.connection.packet;
+package net.browny.common.packet;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;

@@ -1,17 +1,18 @@
-package net.browny.server.connection.handler;
+package net.browny.server.connection.network;
 
-import io.netty.channel.*;
-import net.browny.server.client.User;
-import net.browny.server.connection.crypto.AESCrypto;
+import net.browny.common.user.User;
+import net.browny.common.crypto.AESCrypto;
+import net.browny.common.packet.definition.Handshake;
+import net.browny.server.connection.handler.ChannelHandler;
 import net.browny.server.connection.packet.PacketDecoder;
 import net.browny.server.connection.packet.PacketEncoder;
-import net.browny.server.connection.packet.definition.Handshake;
-import net.browny.server.utility.Config;
+import net.browny.common.utility.Config;
 
-import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.bootstrap.ServerBootstrap;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -21,9 +22,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static net.browny.server.client.NettyUser.CLIENT_KEY;
+import static net.browny.common.user.NettyUser.CLIENT_KEY;
 
-public class HandshakeHandler implements Runnable {
+public class ServerInit implements Runnable {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
     public static Map<String, Channel> channelPool = new HashMap<>();
@@ -42,7 +43,7 @@ public class HandshakeHandler implements Runnable {
 
                 @Override
                 protected void initChannel(SocketChannel socketChannel) {
-                    socketChannel.pipeline().addLast(new PacketDecoder(), new PacketEncoder(), new SessionHandler());
+                    socketChannel.pipeline().addLast(new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
 
                     try {
                         byte[] serverIV = AESCrypto.generateIV();
@@ -59,7 +60,7 @@ public class HandshakeHandler implements Runnable {
                         socketChannel.attr(User.CRYPTO_KEY).set(new AESCrypto());
 
                     } catch (GeneralSecurityException e) {
-                        LOGGER.error(e.getStackTrace());
+                        LOGGER.error(e.getLocalizedMessage());
                     }
                 }
 
@@ -72,7 +73,7 @@ public class HandshakeHandler implements Runnable {
             f.channel().closeFuture().sync();
 
         } catch (InterruptedException e) {
-            LOGGER.error(e.getStackTrace());
+            LOGGER.error(e.getLocalizedMessage());
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();

@@ -1,4 +1,4 @@
-package net.browny.server.client;
+package net.browny.common.user;
 
 import io.netty.channel.Channel;
 
@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class User extends NettyUser {
 
-    private Lock lock;
+    private final Lock lock;
     private Channel channelInstance;
 
     public User(Channel channel, byte[] serverIV, byte[] clientIV) {

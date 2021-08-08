@@ -3,8 +3,9 @@ package net.browny.server.connection.packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import net.browny.server.client.NettyClient;
-import net.browny.server.connection.crypto.AESCrypto;
+import net.browny.common.packet.Packet;
+import net.browny.common.user.NettyUser;
+import net.browny.common.crypto.AESCrypto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,23 +18,23 @@ public final class PacketEncoder extends MessageToByteEncoder<Packet> {
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, Packet outPacket, ByteBuf byteBuf) {
         byte[] data = outPacket.getData();
-        NettyClient nettyClient = channelHandlerContext.channel().attr(NettyClient.CLIENT_KEY).get();
-        AESCrypto aesCrypto = channelHandlerContext.channel().attr(NettyClient.CRYPTO_KEY).get();
+        NettyUser nettyUser = channelHandlerContext.channel().attr(NettyUser.CLIENT_KEY).get();
+        AESCrypto aesCrypto = channelHandlerContext.channel().attr(NettyUser.CRYPTO_KEY).get();
 
-        if (nettyClient != null) {
+        if (nettyUser != null) {
             try {
                 byte[] iv = AESCrypto.generateIV();
-                nettyClient.acquireEncoderState();
+                nettyUser.acquireEncoderState();
                 aesCrypto.encrypt(data, iv);
-                nettyClient.setServerIV(iv);
+                nettyUser.setServerIV(iv);
 
                 byteBuf.writeBytes(iv);
                 byteBuf.writeInt(outPacket.getLength());
                 byteBuf.writeBytes(data);
             } catch (GeneralSecurityException e) {
-                LOGGER.error(e.getStackTrace());
+                LOGGER.error(e.getLocalizedMessage());
             } finally{
-                nettyClient.releaseEncodeState();
+                nettyUser.releaseEncodeState();
             }
         } else {
             LOGGER.debug("[PacketEncoder] | Plain sending " + outPacket);

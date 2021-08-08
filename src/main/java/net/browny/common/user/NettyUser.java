@@ -1,10 +1,10 @@
-package net.browny.server.client;
+package net.browny.common.user;
 
-import net.browny.server.connection.crypto.AESCrypto;
-import net.browny.server.connection.packet.InPacket;
+import net.browny.common.crypto.AESCrypto;
+import net.browny.common.packet.InPacket;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
-import net.browny.server.connection.packet.Packet;
+import net.browny.common.packet.Packet;
 
 import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantLock;
@@ -25,24 +25,24 @@ public class NettyUser {
 
     private final ReentrantLock lock;
 
-    private final InPacket r;
+    private final InPacket inPacket;
 
     private NettyUser() {
         ch = null;
         lock = null;
-        r = null;
+        inPacket = null;
     }
 
     public NettyUser(Channel c, byte[] serverIV, byte[] clientIV) {
         ch = c;
         this.serverIV = serverIV;
         this.clientIV = clientIV;
-        r = new InPacket();
+        this.inPacket = new InPacket();
         lock = new ReentrantLock(true); // note: lock is fair to ensure logical sequence is maintained server-side
     }
 
     public final InPacket getReader() {
-        return r;
+        return inPacket;
     }
 
     public final int getStoredLength() {
