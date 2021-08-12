@@ -77,3 +77,4 @@ fabric.properties
 /target/
 /Server_Log/
 /Client_Log/
+/.idea
