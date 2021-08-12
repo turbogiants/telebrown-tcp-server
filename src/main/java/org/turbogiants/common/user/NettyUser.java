@@ -1,10 +1,10 @@
-package net.browny.common.user;
+package org.turbogiants.common.user;
 
-import net.browny.common.crypto.AESCrypto;
-import net.browny.common.packet.InPacket;
+import org.turbogiants.common.crypto.AESCrypto;
+import org.turbogiants.common.packet.InPacket;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
-import net.browny.common.packet.Packet;
+import org.turbogiants.common.packet.Packet;
 
 import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantLock;

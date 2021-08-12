@@ -1,7 +1,7 @@
-package net.browny.server;
+package org.turbogiants.server;
 
-import net.browny.server.connection.network.ServerInit;
-import net.browny.common.utility.Config;
+import org.turbogiants.server.connection.network.ServerInit;
+import org.turbogiants.common.utility.Config;
 
 import java.io.File;
 

@@ -1,10 +1,10 @@
-package net.browny.client.connection.handler;
+package org.turbogiants.client.connection.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import net.browny.common.packet.InPacket;
-import net.browny.common.packet.PacketEnum;
-import net.browny.common.packet.definition.client.Handshake;
+import org.turbogiants.common.packet.InPacket;
+import org.turbogiants.common.packet.PacketEnum;
+import org.turbogiants.common.packet.definition.client.Handshake;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -1,11 +1,11 @@
-package net.browny.server.connection.packet;
+package org.turbogiants.server.connection.packet;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import net.browny.common.packet.Packet;
-import net.browny.common.user.NettyUser;
-import net.browny.common.crypto.AESCrypto;
+import org.turbogiants.common.packet.Packet;
+import org.turbogiants.common.user.NettyUser;
+import org.turbogiants.common.crypto.AESCrypto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

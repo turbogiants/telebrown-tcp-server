@@ -1,4 +1,4 @@
-package net.browny.server.connection.database;
+package org.turbogiants.server.connection.database;
 
 public class DBManager {
 

@@ -1,4 +1,4 @@
-package net.browny.client.connection.network;
+package org.turbogiants.client.connection.network;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -7,9 +7,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import net.browny.client.connection.handler.ChannelHandler;
-import net.browny.client.connection.packet.PacketDecoder;
-import net.browny.common.utility.Config;
+import org.turbogiants.client.connection.handler.ChannelHandler;
+import org.turbogiants.client.connection.packet.PacketDecoder;
+import org.turbogiants.common.utility.Config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

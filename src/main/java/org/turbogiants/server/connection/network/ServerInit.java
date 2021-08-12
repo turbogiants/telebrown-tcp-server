@@ -1,13 +1,13 @@
-package net.browny.server.connection.network;
+package org.turbogiants.server.connection.network;
 
 import io.netty.handler.timeout.IdleStateHandler;
-import net.browny.common.user.User;
-import net.browny.common.crypto.AESCrypto;
-import net.browny.common.packet.definition.server.Handshake;
-import net.browny.server.connection.handler.ChannelHandler;
-import net.browny.server.connection.packet.PacketDecoder;
-import net.browny.server.connection.packet.PacketEncoder;
-import net.browny.common.utility.Config;
+import org.turbogiants.common.user.User;
+import org.turbogiants.common.crypto.AESCrypto;
+import org.turbogiants.common.packet.definition.server.Handshake;
+import org.turbogiants.server.connection.handler.ChannelHandler;
+import org.turbogiants.server.connection.packet.PacketDecoder;
+import org.turbogiants.server.connection.packet.PacketEncoder;
+import org.turbogiants.common.utility.Config;
 
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -17,13 +17,12 @@ import io.netty.bootstrap.ServerBootstrap;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.turbogiants.common.user.NettyUser;
 
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import static net.browny.common.user.NettyUser.CLIENT_KEY;
 
 public class ServerInit implements Runnable {
 
@@ -58,7 +57,7 @@ public class ServerInit implements Runnable {
                         user.write(Handshake.Handler_TCS_HANDSHAKE_NOT(serverIV, clientIV));
 
                         channelPool.put(user.getIP(), socketChannel);
-                        socketChannel.attr(CLIENT_KEY).set(user);
+                        socketChannel.attr(NettyUser.CLIENT_KEY).set(user);
                         socketChannel.attr(User.CRYPTO_KEY).set(new AESCrypto());
 
                     } catch (GeneralSecurityException e) {

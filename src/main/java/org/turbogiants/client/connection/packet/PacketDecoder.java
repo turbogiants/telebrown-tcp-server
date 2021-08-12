@@ -1,17 +1,16 @@
-package net.browny.client.connection.packet;
+package org.turbogiants.client.connection.packet;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import net.browny.common.crypto.AESCrypto;
-import net.browny.common.packet.InPacket;
+import org.turbogiants.common.crypto.AESCrypto;
+import org.turbogiants.common.packet.InPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.turbogiants.client.Client;
 
 import java.security.GeneralSecurityException;
 import java.util.List;
-
-import static net.browny.client.Client.getAESCryptoInstance;
 
 public class PacketDecoder extends ByteToMessageDecoder {
 
@@ -32,7 +31,7 @@ public class PacketDecoder extends ByteToMessageDecoder {
             int packetLength = 0;
             in.readBytes(serverIV);
             in.readBytes(clientIV);
-            AESCrypto aesCrypto = getAESCryptoInstance();
+            AESCrypto aesCrypto = Client.getAESCryptoInstance();
             aesCrypto.setServerIV(serverIV);
             aesCrypto.setClientIV(clientIV);
             //packet_len

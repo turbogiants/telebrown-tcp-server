@@ -1,8 +1,8 @@
-package net.browny.client;
+package org.turbogiants.client;
 
-import net.browny.client.connection.network.ClientInit;
-import net.browny.common.crypto.AESCrypto;
-import net.browny.common.utility.Config;
+import org.turbogiants.client.connection.network.ClientInit;
+import org.turbogiants.common.crypto.AESCrypto;
+import org.turbogiants.common.utility.Config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;

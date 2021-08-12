@@ -1,4 +1,4 @@
-package net.browny.common.packet;
+package org.turbogiants.common.packet;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

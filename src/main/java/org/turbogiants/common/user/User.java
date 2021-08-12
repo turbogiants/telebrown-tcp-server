@@ -1,4 +1,4 @@
-package net.browny.common.user;
+package org.turbogiants.common.user;
 
 import io.netty.channel.Channel;
 

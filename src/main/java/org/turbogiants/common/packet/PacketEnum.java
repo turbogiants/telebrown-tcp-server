@@ -1,4 +1,4 @@
-package net.browny.common.packet;
+package org.turbogiants.common.packet;
 
 public enum PacketEnum {
     TCS_HANDSHAKE_NOT(0),

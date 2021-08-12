@@ -1,7 +1,7 @@
-package net.browny.common.packet.definition.client;
+package org.turbogiants.common.packet.definition.client;
 
-import net.browny.common.packet.OutPacket;
-import net.browny.common.packet.PacketEnum;
+import org.turbogiants.common.packet.OutPacket;
+import org.turbogiants.common.packet.PacketEnum;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

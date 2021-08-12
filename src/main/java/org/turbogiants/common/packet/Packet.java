@@ -1,4 +1,4 @@
-package net.browny.common.packet;
+package org.turbogiants.common.packet;
 
 public class Packet implements Cloneable {
 

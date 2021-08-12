@@ -1,4 +1,4 @@
-package net.browny.common.utility;
+package org.turbogiants.common.utility;
 
 // logger
 import org.apache.logging.log4j.Logger;

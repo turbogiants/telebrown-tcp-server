@@ -1,8 +1,8 @@
-package net.browny.common.packet.definition.server;
+package org.turbogiants.common.packet.definition.server;
 
 
-import net.browny.common.crypto.AESCrypto;
-import net.browny.common.packet.OutPacket;
+import org.turbogiants.common.crypto.AESCrypto;
+import org.turbogiants.common.packet.OutPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

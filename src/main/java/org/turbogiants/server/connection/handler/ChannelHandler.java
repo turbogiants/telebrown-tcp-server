@@ -1,10 +1,10 @@
-package net.browny.server.connection.handler;
+package org.turbogiants.server.connection.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import net.browny.common.packet.InPacket;
+import org.turbogiants.common.packet.InPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
