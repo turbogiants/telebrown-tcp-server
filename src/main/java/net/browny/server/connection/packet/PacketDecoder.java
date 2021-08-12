@@ -18,9 +18,6 @@ public class PacketDecoder extends ByteToMessageDecoder {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
 
-    private boolean readLength;
-    private int length;
-
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, List<Object> out) {
         NettyUser nettyUser = channelHandlerContext.channel().attr(NettyUser.CLIENT_KEY).get();
@@ -41,18 +38,18 @@ public class PacketDecoder extends ByteToMessageDecoder {
                 }
             }
             if (in.readableBytes() >= nettyUser.getStoredLength()) {
-                byte[] dec = new byte[nettyUser.getStoredLength()];
-                in.readBytes(dec);
+                byte[] data = new byte[nettyUser.getStoredLength()];
+                in.readBytes(data);
                 nettyUser.setStoredLength(-1);
 
                 try {
                     byte[] iv = nettyUser.getClientIV();
-                    dec = aesCrypto.decrypt(dec, new IvParameterSpec(iv));
+                    data = aesCrypto.decrypt(data, new IvParameterSpec(iv));
                     nettyUser.setClientIV(AESCrypto.generateIV());
                 } catch (GeneralSecurityException e) {
                     LOGGER.error(e.getLocalizedMessage());
                 }
-                InPacket inPacket = new InPacket(dec);
+                InPacket inPacket = new InPacket(data);
                 out.add(inPacket);
             }
         }

@@ -25,7 +25,7 @@ public final class PacketEncoder extends MessageToByteEncoder<Packet> {
             try {
                 byte[] iv = AESCrypto.generateIV();
                 nettyUser.acquireEncoderState();
-                aesCrypto.encrypt(data, iv);
+                data = aesCrypto.encrypt(data, iv);
                 nettyUser.setServerIV(iv);
 
                 byteBuf.writeBytes(iv);

@@ -8,8 +8,10 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
 
 public final class AESCrypto {
 
@@ -17,6 +19,8 @@ public final class AESCrypto {
 
     private Cipher cipher;
     private SecretKey sKey;
+    private byte[] clientIV; // will be only used by Client
+    private byte[] serverIV; // will be only used by Client
 
     private static final int PASS_KEY_ITER = 4096;
     private static final char[] PASS_KEY = {
@@ -58,24 +62,23 @@ public final class AESCrypto {
             0x33, 0x4f, 0x59, (byte)0x9f, 0x4b, (byte)0xc2, (byte)0xd6, 0x5e, (byte)0xed, (byte)0x83, (byte)0xfd, 0x4c, (byte)0xc8, 0x47, 0x6d, 0x3e,
     };
 
-//    public static void main(String[] args) {
-//        String plainText = "저 3줄에 자기가 원하는 옵션이 나올 확률이 참...저 3줄에 자기가 원하는 옵션이 나올 확률이 참...";
-//        System.out.println("BaseText: " + plainText);
-//        System.out.println("SHA-256: " + getSha256(plainText.getBytes(StandardCharsets.UTF_8)));
-//        AESCrypto brownyCrypto = new AESCrypto();
-//        try {
-//            byte[] iv = AESCrypto.generateIV();
-//            byte[] enc = brownyCrypto.encrypt(plainText.getBytes(StandardCharsets.UTF_8), iv);
-//            System.out.println("EncText: " + new String(enc));
-//            System.out.println("SHA-256: " + getSha256(enc));
-//            byte[] dec = brownyCrypto.decrypt(enc, iv);
-//            plainText = new String(dec, StandardCharsets.UTF_8);
-//            System.out.println("DecText: " + plainText);
-//            System.out.println("SHA-256: " + getSha256(dec));
-//        } catch (GeneralSecurityException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public static void main(String[] args) {
+        byte[] data = {0, 0};
+        System.out.println("BaseText: " + Arrays.toString(data));
+        System.out.println("SHA-256: " + getSha256(data));
+        AESCrypto brownyCrypto = new AESCrypto();
+        try {
+            byte[] iv = AESCrypto.generateIV();
+            byte[] enc = brownyCrypto.encrypt(data, iv);
+            System.out.println("EncText: " + new String(enc));
+            System.out.println("SHA-256: " + getSha256(enc));
+            byte[] dec = brownyCrypto.decrypt(enc, iv);
+            System.out.println("DecText: " + Arrays.toString(dec));
+            System.out.println("SHA-256: " + getSha256(dec));
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static String getSha256(byte[] input)
     {
@@ -134,5 +137,22 @@ public final class AESCrypto {
         random.nextBytes(byteIV);
         return byteIV;
     }
+
+    public void setServertIV(byte[] serverIV) {
+        this.serverIV = serverIV;
+    }
+
+    public byte[] getServerIV() {
+        return serverIV;
+    }
+
+    public void setClientIV(byte[] clientIV) {
+        this.clientIV = clientIV;
+    }
+
+    public byte[] getClientIV() {
+        return clientIV;
+    }
+
 
 }

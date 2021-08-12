@@ -1,8 +1,9 @@
 package net.browny.server.connection.network;
 
+import io.netty.handler.timeout.IdleStateHandler;
 import net.browny.common.user.User;
 import net.browny.common.crypto.AESCrypto;
-import net.browny.common.packet.definition.Handshake;
+import net.browny.common.packet.definition.server.Handshake;
 import net.browny.server.connection.handler.ChannelHandler;
 import net.browny.server.connection.packet.PacketDecoder;
 import net.browny.server.connection.packet.PacketEncoder;
@@ -43,7 +44,7 @@ public class ServerInit implements Runnable {
 
                 @Override
                 protected void initChannel(SocketChannel socketChannel) {
-                    socketChannel.pipeline().addLast(new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
+                    socketChannel.pipeline().addLast(new IdleStateHandler(5, 5, 5),new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
 
                     try {
                         byte[] serverIV = AESCrypto.generateIV();
@@ -53,7 +54,8 @@ public class ServerInit implements Runnable {
                         LOGGER.info(String.format("serverIV for Client %s =", user.getIP()) + Arrays.toString(serverIV));
                         LOGGER.info(String.format("clientIV for Client %s =", user.getIP()) + Arrays.toString(clientIV));
 
-                        user.write(Handshake.initializeCommunication(serverIV, clientIV));
+                        //starts a handshake
+                        user.write(Handshake.Handler_TCS_HANDSHAKE_NOT(serverIV, clientIV));
 
                         channelPool.put(user.getIP(), socketChannel);
                         socketChannel.attr(CLIENT_KEY).set(user);
