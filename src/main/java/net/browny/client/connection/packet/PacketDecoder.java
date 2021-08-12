@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import java.util.List;
 
 import static net.browny.client.Client.getAESCryptoInstance;
@@ -34,7 +33,7 @@ public class PacketDecoder extends ByteToMessageDecoder {
             in.readBytes(serverIV);
             in.readBytes(clientIV);
             AESCrypto aesCrypto = getAESCryptoInstance();
-            aesCrypto.setServertIV(serverIV);
+            aesCrypto.setServerIV(serverIV);
             aesCrypto.setClientIV(clientIV);
             //packet_len
             if (in.readableBytes() >= 4) {

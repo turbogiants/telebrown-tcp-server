@@ -138,7 +138,7 @@ public final class AESCrypto {
         return byteIV;
     }
 
-    public void setServertIV(byte[] serverIV) {
+    public void setServerIV(byte[] serverIV) {
         this.serverIV = serverIV;
     }
 
