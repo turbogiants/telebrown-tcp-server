@@ -62,7 +62,7 @@ public class NettyUser {
     }
 
     public boolean checkClientIV(byte[] rIV){
-        return Arrays.equals(this.clientIV, rIV);
+        return !Arrays.equals(this.clientIV, rIV);
     }
 
     public boolean checkServerIV(byte[] sIV){

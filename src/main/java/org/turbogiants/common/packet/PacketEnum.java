@@ -1,13 +1,15 @@
 package org.turbogiants.common.packet;
 
 public enum PacketEnum {
+    // Handshake
     TCS_HANDSHAKE_NOT(0),
     TCS_HANDSHAKE_REQ(1),
     TCS_HANDSHAKE_ACK(2),
 
-
-    //Test Packet
-    TCS_TEST_PACKET(1001),
+    // Heartbeat
+    TCS_HEARTBEAT_NOT(3),
+    TCS_HEARTBEAT_REQ(4),
+    TCS_HEARTBEAT_ACK(5),
 
     ;
 

@@ -3,6 +3,7 @@ package org.turbogiants.common.packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class InPacket extends Packet {
@@ -63,11 +64,12 @@ public class InPacket extends Packet {
 
     public String decodeString(int amount) {
         byte[] bytes = decodeArr(amount);
-        char[] chars = new char[amount];
-        for(int i = 0; i < amount; i++) {
-            chars[i] = (char) bytes[i];
-        }
-        return String.valueOf(chars);
+        return new String(bytes, StandardCharsets.UTF_16BE);
+//        char[] chars = new char[amount];
+//        for(int i = 0; i < amount; i++) {
+//            chars[i] = (char) bytes[i];
+//        }
+//        return String.valueOf(chars);
     }
 
     public String decodeString() {

@@ -25,9 +25,10 @@ public class PacketDecoder extends ByteToMessageDecoder {
         if (nettyUser != null) {
             if (nettyUser.getStoredLength() == -1) {
                 if (in.readableBytes() >= 16) {
-                    ByteBuf iv = in.readBytes(16);
+                    byte[] clientIV = new byte[16];
+                    in.readBytes(clientIV);
                     int length = in.readInt();
-                    if (nettyUser.checkClientIV(iv.array())) {
+                    if (nettyUser.checkClientIV(clientIV)) {
                         LOGGER.error(String.format("[PacketDecoder] | Incorrect IV! Dropping client %s.", nettyUser.getIP()));
                         nettyUser.close();
                         return;
@@ -45,7 +46,6 @@ public class PacketDecoder extends ByteToMessageDecoder {
                 try {
                     byte[] iv = nettyUser.getClientIV();
                     data = aesCrypto.decrypt(data, new IvParameterSpec(iv));
-                    nettyUser.setClientIV(AESCrypto.generateIV());
                 } catch (GeneralSecurityException e) {
                     LOGGER.error(e.getLocalizedMessage());
                 }

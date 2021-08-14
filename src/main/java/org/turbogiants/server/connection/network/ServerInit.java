@@ -43,22 +43,24 @@ public class ServerInit implements Runnable {
 
                 @Override
                 protected void initChannel(SocketChannel socketChannel) {
-                    socketChannel.pipeline().addLast(new IdleStateHandler(5, 5, 5),new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
+                    //socketChannel.pipeline().addLast(new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
+                    socketChannel.pipeline().addLast(new IdleStateHandler(15, 15, 15), new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
 
                     try {
                         byte[] serverIV = AESCrypto.generateIV();
                         byte[] clientIV = AESCrypto.generateIV();
 
                         User user = new User(socketChannel, serverIV, clientIV);
-                        LOGGER.info(String.format("serverIV for Client %s =", user.getIP()) + Arrays.toString(serverIV));
-                        LOGGER.info(String.format("clientIV for Client %s =", user.getIP()) + Arrays.toString(clientIV));
+//                        LOGGER.info(String.format("serverIV for Client %s =", user.getIP()) + Arrays.toString(serverIV));
+//                        LOGGER.info(String.format("clientIV for Client %s =", user.getIP()) + Arrays.toString(clientIV));
 
-                        //starts a handshake
-                        user.write(Handshake.Handler_TCS_HANDSHAKE_NOT(serverIV, clientIV));
 
                         channelPool.put(user.getIP(), socketChannel);
                         socketChannel.attr(NettyUser.CLIENT_KEY).set(user);
                         socketChannel.attr(User.CRYPTO_KEY).set(new AESCrypto());
+
+                        //starts a handshake
+                        user.write(Handshake.Handler_TCS_HANDSHAKE_NOT());
 
                     } catch (GeneralSecurityException e) {
                         LOGGER.error(e.getLocalizedMessage());

@@ -9,6 +9,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.turbogiants.client.connection.handler.ChannelHandler;
 import org.turbogiants.client.connection.packet.PacketDecoder;
+import org.turbogiants.client.connection.packet.PacketEncoder;
 import org.turbogiants.common.utility.Config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ClientInit implements Runnable{
     private static final Logger LOGGER = LogManager.getRootLogger();
-
+    public static SocketChannel socketChannel;
     @Override
     public void run() {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -27,7 +28,8 @@ public class ClientInit implements Runnable{
             b.handler(new ChannelInitializer<SocketChannel>(){
                 @Override
                 protected void initChannel(SocketChannel socketChannel) {
-                    socketChannel.pipeline().addLast(new PacketDecoder(), new ChannelHandler());
+                    socketChannel.pipeline().addLast(new PacketDecoder(), new ChannelHandler(), new PacketEncoder());
+                    ClientInit.socketChannel = socketChannel;
                 }
             });
             ChannelFuture f = b.connect(Config.getSocketIp() , Config.getSocketPort()).sync();

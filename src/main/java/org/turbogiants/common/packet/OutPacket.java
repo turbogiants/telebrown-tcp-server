@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class OutPacket extends Packet {
@@ -98,12 +99,13 @@ public class OutPacket extends Packet {
         if (s == null) {
             s = "";
         }
-        if (s.length() > Short.MAX_VALUE) {
+        int stringLen = s.getBytes(StandardCharsets.UTF_16BE).length;
+        if (stringLen > Short.MAX_VALUE) {
             LOGGER.error("Tried to encode a string that is too big.");
             return;
         }
-        encodeShort((short) s.length());
-        encodeString(s, (short) s.length());
+        encodeShort((short) stringLen);
+        encodeString(s, (short) stringLen);
     }
 
     public void encodeString(String s, short length) {
@@ -111,9 +113,10 @@ public class OutPacket extends Packet {
             s = "";
         }
         if (s.length() > 0) {
-            for (char c : s.toCharArray()) {
-                encodeChar(c);
-            }
+            encodeArr(s.getBytes(StandardCharsets.UTF_16BE));
+//            for (char c : s.toCharArray()) {
+//                encodeChar(c);
+//            }
         }
         for (int i = s.length(); i < length; i++) {
             encodeByte((byte) 0);

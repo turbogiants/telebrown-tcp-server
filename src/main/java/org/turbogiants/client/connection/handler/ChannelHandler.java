@@ -2,11 +2,15 @@ package org.turbogiants.client.connection.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.turbogiants.common.handler.EventHandler;
 import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.PacketEnum;
 import org.turbogiants.common.packet.definition.client.Handshake;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.turbogiants.common.packet.definition.client.Heartbeat;
+
+import static org.turbogiants.client.connection.network.ClientInit.socketChannel;
 
 
 public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
@@ -37,18 +41,29 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
         switch(opcode){
             case 0: //TCS_HANDSHAKE_NOT
             {
-                ctx.writeAndFlush(Handshake.Handler_TCS_HANDSHAKE_REQ());
+                socketChannel.writeAndFlush(Handshake.Handler_TCS_HANDSHAKE_NOT());
                 break;
             }
             case 2: //TCS_HANDSHAKE_ACK
             {
-
+                Handshake.Handler_TCS_HANDSHAKE_ACK();
+                break;
+            }
+            case 3: //TCS_HEARTBEAT_NOT
+            {
+                socketChannel.writeAndFlush(Heartbeat.Handler_TCS_HEARTBEAT_NOT());
+                break;
+            }
+            case 5: //TCS_HEARTBEAT_ACK
+            {
+                EventHandler.addEvent(
+                        () -> socketChannel.writeAndFlush(Heartbeat.Handler_TCS_HEARTBEAT_ACK()),
+                        10000);
                 break;
             }
             default:
                 LOGGER.error("Invalid Packet ID : " + opcode + " - Client Closing");
                 ctx.close();
-                return;
         }
 
     }
