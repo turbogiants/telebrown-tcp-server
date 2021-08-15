@@ -20,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.turbogiants.common.user.NettyUser;
 
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ public class ServerInit implements Runnable {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
     public static Map<String, Channel> channelPool = new HashMap<>();
+
 
     @Override
     public void run() {
@@ -43,7 +45,6 @@ public class ServerInit implements Runnable {
 
                 @Override
                 protected void initChannel(SocketChannel socketChannel) {
-                    //socketChannel.pipeline().addLast(new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
                     socketChannel.pipeline().addLast(new IdleStateHandler(15, 15, 15), new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
 
                     try {
@@ -51,9 +52,6 @@ public class ServerInit implements Runnable {
                         byte[] clientIV = AESCrypto.generateIV();
 
                         User user = new User(socketChannel, serverIV, clientIV);
-//                        LOGGER.info(String.format("serverIV for Client %s =", user.getIP()) + Arrays.toString(serverIV));
-//                        LOGGER.info(String.format("clientIV for Client %s =", user.getIP()) + Arrays.toString(clientIV));
-
 
                         channelPool.put(user.getIP(), socketChannel);
                         socketChannel.attr(NettyUser.CLIENT_KEY).set(user);

@@ -9,6 +9,7 @@ import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
 import org.turbogiants.common.packet.definition.server.CUser;
+import org.turbogiants.common.packet.definition.server.Comm;
 import org.turbogiants.common.packet.definition.server.Handshake;
 
 import org.apache.logging.log4j.LogManager;
@@ -27,12 +28,13 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable e) {
+        User user = (User) ctx.channel().attr(CLIENT_KEY).get();
         if (e instanceof IOException) {
             LOGGER.info("Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ") forcibly closed the application.");
         } else {
             LOGGER.error("Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ") " + e.getLocalizedMessage());
         }
-        ctx.close(); //we should close the client it if it makes a problem
+        user.close(); //we should close the client it if it makes a problem
     }
 
     @Override
@@ -42,7 +44,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
         PacketEnum packetEnum = PacketEnum.getHeaderByOP(opcode);
         if (packetEnum == null) {
             LOGGER.error("Invalid Packet ID : " + opcode + " - Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ")");
-            ctx.close();
+            user.close();
             return;
         }
 
@@ -63,26 +65,39 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                 user.write(Heartbeat.Handler_TCS_HEARTBEAT_REQ());
                 break;
             }
-            case 6: //Handler_TCS_USER_SET_ID_REQ
+            case 6: //TCS_USER_SET_ID_REQ
             {
-                user.write(CUser.Handler_TCS_USER_SET_ID_REQ(user, inPacket));
+                OutPacket oPacket = CUser.Handler_TCS_USER_SET_ID_REQ(user, inPacket);
+                if (oPacket == null)
+                    user.close(); // setID is weird
+                else {
+                    user.write(oPacket);
+                    user.write(Heartbeat.Handler_TCS_HEARTBEAT_NOT()); // start doing heartbeat
+                }
                 break;
             }
+            case 9: //TCS_COMM_MESSAGE_REQ
+            {
+                user.write(Comm.Handler_TCS_COMM_MESSAGE_REQ(user, inPacket));
+                break;
+            }
+
             default:
                 LOGGER.error("Invalid Packet ID : " + opcode + " - Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ")");
-                ctx.close();
+                user.close();
         }
     }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
+        User user = (User) ctx.channel().attr(CLIENT_KEY).get();
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
             if (e.state() == IdleState.READER_IDLE ||
                     e.state() == IdleState.WRITER_IDLE ||
                     e.state() == IdleState.ALL_IDLE) {
                 LOGGER.info("Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ") will be disconnected due to inactivity.");
-                ctx.close();
+                user.close();
             }
         }
     }

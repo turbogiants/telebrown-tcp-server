@@ -17,7 +17,6 @@ public class CUser {
 
     public static void Handler_TCS_USER_SET_ID_ACK(InPacket inPacket) {
         byte b = inPacket.decodeByte();
-        boolean bool = b != 0;
-        LOGGER.debug("SetID Result:" + bool);
+        LOGGER.info("SetID Result:" + b);
     }
 }

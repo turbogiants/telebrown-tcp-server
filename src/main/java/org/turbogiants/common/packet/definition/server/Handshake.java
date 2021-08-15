@@ -27,7 +27,7 @@ public class Handshake {
         }
 
         OutPacket oPacket = new OutPacket(PacketEnum.TCS_HANDSHAKE_ACK);
-        oPacket.encodeByte(true);
+        oPacket.encodeByte(0); // ok
         return oPacket;
     }
 }

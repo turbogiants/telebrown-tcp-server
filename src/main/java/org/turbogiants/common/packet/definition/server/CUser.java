@@ -5,15 +5,34 @@ import org.apache.logging.log4j.Logger;
 import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
+import org.turbogiants.common.user.User;
+import org.turbogiants.common.user.UserDef;
 
 public class CUser {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
 
-    public static OutPacket Handler_TCS_USER_SET_ID_REQ(org.turbogiants.common.user.User user, InPacket inPacket) {
+    // todo: get uid from database instead of user defined id input
+    public static OutPacket Handler_TCS_USER_SET_ID_REQ(User user, InPacket inPacket) {
+        int uid = inPacket.decodeInt();
+        if(uid <= 0){
+            LOGGER.error("Client(" + user.getIP() + ") SetID to " + uid);
+            return null;
+        }
+        boolean isExists = User.isUserIDExists(uid);
+        if(isExists){
+            LOGGER.error("Client(" + user.getIP() + ") SetID to " + uid + " but already exists");
+            return null;
+        }
         OutPacket outPacket = new OutPacket(PacketEnum.TCS_USER_SET_ID_ACK);
-        LOGGER.debug("Client(" + user.getIP() + ") SetID to " + inPacket.decodeInt());
-        outPacket.encodeByte(true);
+        outPacket.encodeByte(0); // ok
+
+        UserDef userDef = new UserDef();
+        userDef.setUID(uid);
+        user.setUserDef(userDef);
+
+
+        LOGGER.info("Client(" + user.getIP() + ") SetID to " + uid);
         return outPacket;
     }
 }

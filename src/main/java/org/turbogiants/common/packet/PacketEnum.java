@@ -15,6 +15,11 @@ public enum PacketEnum {
     TCS_USER_SET_ID_REQ(6),
     TCS_USER_SET_ID_ACK(7),
 
+    // Communication
+    TCS_COMM_MESSAGE_NOT(8),
+    TCS_COMM_MESSAGE_REQ(9),
+    TCS_COMM_MESSAGE_ACK(10),
+
     ;
 
     private final short packetID;

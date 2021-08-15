@@ -23,11 +23,11 @@ public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, OutPacket outPacket, ByteBuf byteBuf) {
+        lock.lock();
         AESCrypto aesCrypto = Client.getAESCryptoInstance();
         byte[] iv = aesCrypto.getClientIV();
         byte[] data = outPacket.getData();
         try {
-            lock.lock();
             data = aesCrypto.encrypt(data, iv);
 
             byteBuf.writeBytes(iv);

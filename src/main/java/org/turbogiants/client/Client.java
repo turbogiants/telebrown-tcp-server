@@ -41,11 +41,19 @@ public class Client {
         long startNow = System.currentTimeMillis();
         Config.init(false);
         logger.info("Configuration loaded in " + (System.currentTimeMillis() - startNow) + "ms");
-        new Thread(new ClientInit()).start();
+        Thread clientInit = new Thread(new ClientInit());
+        clientInit.start();
         logger.info("Client attempting connection to " + Config.getSocketIp() + ":" + Config.getSocketPort() + " in " + (System.currentTimeMillis() - startNow) + "ms");
         logger.info(String.format("Finished loading test client in %dms", System.currentTimeMillis() - startNow));
         new Thread(new CommandListener()).start();
-        System.out.println("\n");
 
+        try {
+            clientInit.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        System.exit(0);
     }
 }

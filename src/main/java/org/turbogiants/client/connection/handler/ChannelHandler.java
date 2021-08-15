@@ -6,6 +6,7 @@ import org.turbogiants.common.handler.EventHandler;
 import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.PacketEnum;
 import org.turbogiants.common.packet.definition.client.CUser;
+import org.turbogiants.common.packet.definition.client.Comm;
 import org.turbogiants.common.packet.definition.client.Handshake;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,11 +34,6 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
             ctx.close();
             return;
         }
-//        byte[] serverIV = inPacket.decodeArr(16);
-//        byte[] clientIV = inPacket.decodeArr(16);
-//        LOGGER.info("opcode: " + opcode);
-//        LOGGER.info("serverIV: " + Arrays.toString(serverIV));
-//        LOGGER.info("clientIV: " + Arrays.toString(clientIV));
 
         switch (opcode) {
             case 0: //TCS_HANDSHAKE_NOT
@@ -65,6 +61,17 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
             case 7: //TCS_USER_SET_ID_ACK
             {
                 CUser.Handler_TCS_USER_SET_ID_ACK(inPacket);
+
+                break;
+            }
+            case 8: //TCS_COMM_MESSAGE_NOT
+            {
+                Comm.Handler_TCS_COMM_MESSAGE_NOT(inPacket);
+                break;
+            }
+            case 10: //TCS_COMM_MESSAGE_ACK
+            {
+                Comm.Handler_TCS_COMM_MESSAGE_ACK(inPacket);
                 break;
             }
             default:
