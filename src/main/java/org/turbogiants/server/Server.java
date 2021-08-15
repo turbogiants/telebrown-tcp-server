@@ -24,6 +24,7 @@ public class Server {
         logger.info("Configuration loaded in " + (System.currentTimeMillis() - startNow) + "ms");
         new Thread(new ServerInit()).start();
         logger.info("Binded to " + Config.getSocketIp() + ":" + Config.getSocketPort() + " in " + (System.currentTimeMillis() - startNow) + "ms");
+        logger.info(String.format("Finished loading server in %dms", System.currentTimeMillis() - startNow));
 
     }
 

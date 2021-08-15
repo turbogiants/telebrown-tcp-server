@@ -1,5 +1,6 @@
 package org.turbogiants.client;
 
+import org.turbogiants.client.cli.CommandListener;
 import org.turbogiants.client.connection.network.ClientInit;
 import org.turbogiants.common.crypto.AESCrypto;
 import org.turbogiants.common.utility.Config;
@@ -29,6 +30,9 @@ public class Client {
         logger.info("Configuration loaded in " + (System.currentTimeMillis() - startNow) + "ms");
         new Thread(new ClientInit()).start();
         logger.info("Client attempting connection to " + Config.getSocketIp() + ":" + Config.getSocketPort() + " in " + (System.currentTimeMillis() - startNow) + "ms");
+        logger.info(String.format("Finished loading test client in %dms", System.currentTimeMillis() - startNow));
+        new Thread(new CommandListener()).start();
+        System.out.println("\n");
 
     }
 

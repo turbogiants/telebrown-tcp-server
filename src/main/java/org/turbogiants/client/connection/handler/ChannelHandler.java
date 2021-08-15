@@ -5,6 +5,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.turbogiants.common.handler.EventHandler;
 import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.PacketEnum;
+import org.turbogiants.common.packet.definition.client.CUser;
 import org.turbogiants.common.packet.definition.client.Handshake;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,6 +60,11 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                 EventHandler.addEvent(
                         () -> socketChannel.writeAndFlush(Heartbeat.Handler_TCS_HEARTBEAT_ACK()),
                         10000);
+                break;
+            }
+            case 7: //TCS_USER_SET_ID_ACK
+            {
+                CUser.Handler_TCS_USER_SET_ID_ACK(inPacket);
                 break;
             }
             default:

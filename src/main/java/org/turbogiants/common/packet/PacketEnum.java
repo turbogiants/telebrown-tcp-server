@@ -11,6 +11,10 @@ public enum PacketEnum {
     TCS_HEARTBEAT_REQ(4),
     TCS_HEARTBEAT_ACK(5),
 
+    // User
+    TCS_USER_SET_ID_REQ(6),
+    TCS_USER_SET_ID_ACK(7),
+
     ;
 
     private short packetID;

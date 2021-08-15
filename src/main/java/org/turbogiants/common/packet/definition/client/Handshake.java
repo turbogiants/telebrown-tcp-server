@@ -18,7 +18,7 @@ public class Handshake {
     }
 
     public static void Handler_TCS_HANDSHAKE_ACK(){
-        LOGGER.info("Handshake Success!");
+        LOGGER.debug("Handshake Success!");
     }
 
 }

@@ -5,10 +5,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
-import org.turbogiants.common.handler.EventHandler;
 import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
+import org.turbogiants.common.packet.definition.server.CUser;
 import org.turbogiants.common.packet.definition.server.Handshake;
 
 import org.apache.logging.log4j.LogManager;
@@ -61,6 +61,11 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
             case 4: //TCS_HEARTBEAT_REQ
             {
                 user.write(Heartbeat.Handler_TCS_HEARTBEAT_REQ());
+                break;
+            }
+            case 6: //Handler_TCS_USER_SET_ID_REQ
+            {
+                user.write(CUser.Handler_TCS_USER_SET_ID_REQ(user, inPacket));
                 break;
             }
             default:
