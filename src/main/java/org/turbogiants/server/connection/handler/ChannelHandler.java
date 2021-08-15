@@ -8,18 +8,18 @@ import io.netty.handler.timeout.IdleStateEvent;
 import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
-import org.turbogiants.common.packet.definition.server.CUser;
-import org.turbogiants.common.packet.definition.server.Comm;
-import org.turbogiants.common.packet.definition.server.Handshake;
+import org.turbogiants.server.connection.definition.CUser;
+import org.turbogiants.server.connection.definition.Comm;
+import org.turbogiants.server.connection.definition.Handshake;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.turbogiants.common.packet.definition.server.Heartbeat;
-import org.turbogiants.common.user.User;
+import org.turbogiants.server.connection.definition.Heartbeat;
+import org.turbogiants.server.user.User;
 
 import java.io.IOException;
 
-import static org.turbogiants.common.user.NettyUser.CLIENT_KEY;
+import static org.turbogiants.server.user.NettyUser.CLIENT_KEY;
 
 
 public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {

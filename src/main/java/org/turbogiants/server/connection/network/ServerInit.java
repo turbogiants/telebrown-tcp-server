@@ -1,9 +1,9 @@
 package org.turbogiants.server.connection.network;
 
 import io.netty.handler.timeout.IdleStateHandler;
-import org.turbogiants.common.user.User;
+import org.turbogiants.server.user.User;
 import org.turbogiants.common.crypto.AESCrypto;
-import org.turbogiants.common.packet.definition.server.Handshake;
+import org.turbogiants.server.connection.definition.Handshake;
 import org.turbogiants.server.connection.handler.ChannelHandler;
 import org.turbogiants.server.connection.packet.PacketDecoder;
 import org.turbogiants.server.connection.packet.PacketEncoder;
@@ -17,11 +17,9 @@ import io.netty.bootstrap.ServerBootstrap;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.turbogiants.common.user.NettyUser;
+import org.turbogiants.server.user.NettyUser;
 
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 

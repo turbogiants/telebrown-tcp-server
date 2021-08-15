@@ -1,12 +1,11 @@
-package org.turbogiants.common.packet.definition.server;
+package org.turbogiants.server.connection.definition;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
-import org.turbogiants.common.user.User;
-import org.turbogiants.common.user.UserDef;
+import org.turbogiants.server.user.User;
 
 public class Comm {
 

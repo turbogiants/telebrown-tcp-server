@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import org.turbogiants.common.packet.OutPacket;
-import org.turbogiants.common.user.NettyUser;
+import org.turbogiants.server.user.NettyUser;
 import org.turbogiants.common.crypto.AESCrypto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

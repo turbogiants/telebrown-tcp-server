@@ -1,4 +1,4 @@
-package org.turbogiants.common.user;
+package org.turbogiants.server.user;
 
 public class UserDef {
     // for testing purposes we will be using integer

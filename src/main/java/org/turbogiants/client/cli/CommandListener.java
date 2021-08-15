@@ -1,7 +1,7 @@
 package org.turbogiants.client.cli;
 
-import org.turbogiants.common.packet.definition.client.CUser;
-import org.turbogiants.common.packet.definition.client.Comm;
+import org.turbogiants.client.connection.definition.CUser;
+import org.turbogiants.client.connection.definition.Comm;
 
 import java.util.Scanner;
 

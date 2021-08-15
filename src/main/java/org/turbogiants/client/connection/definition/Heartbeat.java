@@ -1,4 +1,4 @@
-package org.turbogiants.common.packet.definition.client;
+package org.turbogiants.client.connection.definition;
 
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;

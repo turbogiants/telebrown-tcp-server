@@ -1,4 +1,4 @@
-package org.turbogiants.common.user;
+package org.turbogiants.server.user;
 
 import org.turbogiants.common.crypto.AESCrypto;
 import org.turbogiants.common.packet.InPacket;

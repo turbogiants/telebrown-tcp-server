@@ -1,4 +1,4 @@
-package org.turbogiants.common.packet.definition.client;
+package org.turbogiants.client.connection.definition;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
