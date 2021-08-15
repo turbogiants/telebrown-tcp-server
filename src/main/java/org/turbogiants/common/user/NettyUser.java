@@ -14,18 +14,12 @@ public class NettyUser {
     public static final AttributeKey<AESCrypto> CRYPTO_KEY = AttributeKey.valueOf("A");
 
     public static final AttributeKey<NettyUser> CLIENT_KEY = AttributeKey.valueOf("C");
-
-    private byte[] serverIV;
-
-    private byte[] clientIV;
-
-    private int storedLength = -1;
-
     protected final Channel ch;
-
     private final ReentrantLock lock;
-
     private final InPacket inPacket;
+    private byte[] serverIV;
+    private byte[] clientIV;
+    private int storedLength = -1;
 
     private NettyUser() {
         ch = null;
@@ -57,26 +51,25 @@ public class NettyUser {
         return serverIV;
     }
 
-    public final byte[] getClientIV() {
-        return clientIV;
-    }
-
-    public boolean checkClientIV(byte[] rIV){
-        return !Arrays.equals(this.clientIV, rIV);
-    }
-
-    public boolean checkServerIV(byte[] sIV){
-        return Arrays.equals(this.serverIV, sIV);
-    }
-
     public final void setServerIV(byte[] serverIV) {
         this.serverIV = serverIV;
+    }
+
+    public final byte[] getClientIV() {
+        return clientIV;
     }
 
     public final void setClientIV(byte[] clientIV) {
         this.clientIV = clientIV;
     }
 
+    public boolean checkClientIV(byte[] rIV) {
+        return !Arrays.equals(this.clientIV, rIV);
+    }
+
+    public boolean checkServerIV(byte[] sIV) {
+        return Arrays.equals(this.serverIV, sIV);
+    }
 
     public void write(Packet msg) {
         assert ch != null;

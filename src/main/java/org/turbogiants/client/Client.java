@@ -12,18 +12,31 @@ import java.io.File;
 
 
 public class Client {
-    public final Logger logger = LogManager.getRootLogger();
     private static final Client client = new Client();
     private static final AESCrypto aesCrypto = new AESCrypto();
+    public final Logger logger = LogManager.getRootLogger();
 
     public static Client getClientInstance() {
         return client;
     }
+
     public static AESCrypto getAESCryptoInstance() {
         return aesCrypto;
     }
 
-    private void init(String[] args){
+    public static void main(String[] args) {
+        try {
+            LoggerContext context = (LoggerContext) LogManager.getContext(false);
+            File file = new File("log4j2_client.xml");
+            context.setConfigLocation(file.toURI());
+            Client.getClientInstance().init(args);
+        } catch (Exception e) {
+            Client.getClientInstance().logger.error(e.getLocalizedMessage());
+        }
+
+    }
+
+    private void init(String[] args) {
         logger.info("Browny Test Client [Start]");
         long startNow = System.currentTimeMillis();
         Config.init(false);
@@ -33,18 +46,6 @@ public class Client {
         logger.info(String.format("Finished loading test client in %dms", System.currentTimeMillis() - startNow));
         new Thread(new CommandListener()).start();
         System.out.println("\n");
-
-    }
-
-    public static void main(String[] args) {
-        try{
-            LoggerContext context = (LoggerContext) LogManager.getContext(false);
-            File file = new File("log4j2_client.xml");
-            context.setConfigLocation(file.toURI());
-            Client.getClientInstance().init(args);
-        }catch(Exception e){
-            Client.getClientInstance().logger.error(e.getLocalizedMessage());
-        }
 
     }
 }

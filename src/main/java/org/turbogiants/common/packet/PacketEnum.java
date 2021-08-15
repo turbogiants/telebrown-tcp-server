@@ -17,14 +17,10 @@ public enum PacketEnum {
 
     ;
 
-    private short packetID;
+    private final short packetID;
 
     PacketEnum(int packetID) {
         this.packetID = (short) packetID;
-    }
-
-    public short getPacketID() {
-        return packetID;
     }
 
     public static PacketEnum getHeaderByOP(int packetID) {
@@ -34,5 +30,9 @@ public enum PacketEnum {
             }
         }
         return null;
+    }
+
+    public short getPacketID() {
+        return packetID;
     }
 }

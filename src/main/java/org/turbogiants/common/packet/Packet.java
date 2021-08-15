@@ -4,6 +4,11 @@ public class Packet implements Cloneable {
 
     private byte[] data;
 
+    public Packet(byte[] data) {
+        this.data = new byte[data.length];
+        System.arraycopy(data, 0, this.data, 0, data.length);
+    }
+
     public static byte[] getByteArrayByString(String s) {
         s = s.replace("|", " ");
         s = s.replace(" ", "");
@@ -18,15 +23,10 @@ public class Packet implements Cloneable {
 
     public static String readableByteArray(byte[] arr) {
         StringBuilder res = new StringBuilder();
-        for(byte b : arr) {
-            res.append(String.format("%02X ",b));
+        for (byte b : arr) {
+            res.append(String.format("%02X ", b));
         }
         return res.toString();
-    }
-
-    public Packet(byte[] data) {
-        this.data = new byte[data.length];
-        System.arraycopy(data, 0, this.data, 0, data.length);
     }
 
     public int getLength() {
@@ -43,12 +43,12 @@ public class Packet implements Cloneable {
         return (data[0] + (data[1] << 8));
     }
 
-    public void setData(byte[] nD) {
-        data = nD;
-    }
-
     public byte[] getData() {
         return data;
+    }
+
+    public void setData(byte[] nD) {
+        data = nD;
     }
 
     @Override
@@ -63,7 +63,8 @@ public class Packet implements Cloneable {
         return new Packet(data);
     }
 
-    public void release(){}
+    public void release() {
+    }
 
 }
 

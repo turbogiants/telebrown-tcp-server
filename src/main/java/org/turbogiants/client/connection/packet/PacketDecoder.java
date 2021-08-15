@@ -19,11 +19,11 @@ public class PacketDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, List<Object> out) {
         /*
-        *  1 (0) ~ 16 (15) = serverIV
-        *  17 (16) ~ 32 (31) = clientIV
-        *  33 ~ 36 = packetLength
-        *  37 ~ = packetID and data
-        * */
+         *  1 (0) ~ 16 (15) = serverIV
+         *  17 (16) ~ 32 (31) = clientIV
+         *  33 ~ 36 = packetLength
+         *  37 ~ = packetID and data
+         * */
         if (in.readableBytes() >= 32) {
             //set IV
             byte[] serverIV = new byte[16];

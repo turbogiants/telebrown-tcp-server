@@ -11,14 +11,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class OutPacket extends Packet {
-    private ByteBuf byteBuf;
-    private boolean loopback = false;
-
-    //todo: zlib compression
-    private boolean compression = false;
-
-    private short op;
     private static final Logger LOGGER = LogManager.getRootLogger();
+    private final ByteBuf byteBuf;
+    private final boolean loopback = false;
+    //todo: zlib compression
+    private final boolean compression = false;
+    private short op;
 
     public OutPacket(short op) {
         super(new byte[]{});
@@ -124,13 +122,6 @@ public class OutPacket extends Packet {
     }
 
     @Override
-    public void setData(byte[] nD) {
-        super.setData(nD);
-        byteBuf.clear();
-        encodeArr(nD);
-    }
-
-    @Override
     public byte[] getData() {
         if (byteBuf.hasArray()) {
             return byteBuf.array();
@@ -139,6 +130,13 @@ public class OutPacket extends Packet {
             byteBuf.nioBuffer().get(arr, 0, byteBuf.writerIndex());
             return arr;
         }
+    }
+
+    @Override
+    public void setData(byte[] nD) {
+        super.setData(nD);
+        byteBuf.clear();
+        encodeArr(nD);
     }
 
     @Override

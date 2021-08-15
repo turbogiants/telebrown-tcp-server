@@ -10,9 +10,9 @@ public class CUser {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
 
-    public static OutPacket Handler_TCS_USER_SET_ID_REQ(org.turbogiants.common.user.User user, InPacket inPacket){
+    public static OutPacket Handler_TCS_USER_SET_ID_REQ(org.turbogiants.common.user.User user, InPacket inPacket) {
         OutPacket outPacket = new OutPacket(PacketEnum.TCS_USER_SET_ID_ACK);
-        LOGGER.debug("Client("+user.getIP()+") SetID to " + inPacket.decodeInt());
+        LOGGER.debug("Client(" + user.getIP() + ") SetID to " + inPacket.decodeInt());
         outPacket.encodeByte(true);
         return outPacket;
     }

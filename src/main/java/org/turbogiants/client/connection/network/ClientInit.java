@@ -15,24 +15,25 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-public class ClientInit implements Runnable{
+public class ClientInit implements Runnable {
     private static final Logger LOGGER = LogManager.getRootLogger();
     public static SocketChannel socketChannel;
+
     @Override
     public void run() {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        try{
+        try {
             Bootstrap b = new Bootstrap();
             b.group(workerGroup);
             b.channel(NioSocketChannel.class);
-            b.handler(new ChannelInitializer<SocketChannel>(){
+            b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel socketChannel) {
                     socketChannel.pipeline().addLast(new PacketDecoder(), new ChannelHandler(), new PacketEncoder());
                     ClientInit.socketChannel = socketChannel;
                 }
             });
-            ChannelFuture f = b.connect(Config.getSocketIp() , Config.getSocketPort()).sync();
+            ChannelFuture f = b.connect(Config.getSocketIp(), Config.getSocketPort()).sync();
             f.channel().closeFuture().sync();
         } catch (Exception e) {
             LOGGER.error(e.getLocalizedMessage());

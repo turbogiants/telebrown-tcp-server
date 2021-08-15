@@ -9,15 +9,15 @@ import org.turbogiants.common.packet.PacketEnum;
 public class CUser {
     private static final Logger LOGGER = LogManager.getRootLogger();
 
-    public static OutPacket Handler_TCS_USER_SET_ID_REQ(int iID){
+    public static OutPacket Handler_TCS_USER_SET_ID_REQ(int iID) {
         OutPacket outPacket = new OutPacket(PacketEnum.TCS_USER_SET_ID_REQ);
         outPacket.encodeInt(iID);
         return outPacket;
     }
 
-    public static void Handler_TCS_USER_SET_ID_ACK(InPacket inPacket){
+    public static void Handler_TCS_USER_SET_ID_ACK(InPacket inPacket) {
         byte b = inPacket.decodeByte();
-        boolean bool = b!=0;
+        boolean bool = b != 0;
         LOGGER.debug("SetID Result:" + bool);
     }
 }

@@ -35,11 +35,11 @@ public class ServerInit implements Runnable {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-        try{
+        try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup);
             b.channel(NioServerSocketChannel.class);
-            b.childHandler(new ChannelInitializer<SocketChannel>(){
+            b.childHandler(new ChannelInitializer<SocketChannel>() {
 
                 @Override
                 protected void initChannel(SocketChannel socketChannel) {

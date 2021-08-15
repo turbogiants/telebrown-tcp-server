@@ -40,17 +40,17 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
         User user = (User) ctx.channel().attr(CLIENT_KEY).get();
         short opcode = inPacket.decodeShort();
         PacketEnum packetEnum = PacketEnum.getHeaderByOP(opcode);
-        if (packetEnum == null){
+        if (packetEnum == null) {
             LOGGER.error("Invalid Packet ID : " + opcode + " - Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ")");
             ctx.close();
             return;
         }
 
-        switch(opcode){
+        switch (opcode) {
             case 1: //TCS_HANDSHAKE_REQ
             {
                 OutPacket oPacket = Handshake.Handler_TCS_HANDSHAKE_REQ(user, inPacket);
-                if(oPacket == null)
+                if (oPacket == null)
                     user.close(); // handshake failed
                 else {
                     user.write(oPacket);

@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 import static org.turbogiants.client.connection.network.ClientInit.socketChannel;
 
-public class CommandListener implements Runnable{
+public class CommandListener implements Runnable {
 
     private static final String[] strCommandList = {
             "setID",
@@ -17,13 +17,13 @@ public class CommandListener implements Runnable{
 
     @Override
     public void run() {
-        while(!strCommand.equals("exit")){
+        while (!strCommand.equals("exit")) {
             Scanner myObj = new Scanner(System.in);
             System.out.print(">> ");
             String commandLine = myObj.nextLine();
 
             String[] commands = commandLine.split(" ");
-            if(commands.length >= 2) {
+            if (commands.length >= 2) {
                 for (String s : strCommandList) {
                     if (commands[0].equals(s)) {
                         strCommand = s;
@@ -38,7 +38,7 @@ public class CommandListener implements Runnable{
         }
     }
 
-    private void setID(int iID){
+    private void setID(int iID) {
         socketChannel.writeAndFlush(CUser.Handler_TCS_USER_SET_ID_REQ(iID));
     }
 

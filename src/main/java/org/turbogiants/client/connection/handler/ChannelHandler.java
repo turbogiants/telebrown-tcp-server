@@ -28,7 +28,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
     protected void channelRead0(ChannelHandlerContext ctx, InPacket inPacket) {
         short opcode = inPacket.decodeShort();
         PacketEnum packetEnum = PacketEnum.getHeaderByOP(opcode);
-        if (packetEnum == null){
+        if (packetEnum == null) {
             LOGGER.error("Invalid Packet ID : " + opcode + " - Client Closing");
             ctx.close();
             return;
@@ -39,7 +39,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
 //        LOGGER.info("serverIV: " + Arrays.toString(serverIV));
 //        LOGGER.info("clientIV: " + Arrays.toString(clientIV));
 
-        switch(opcode){
+        switch (opcode) {
             case 0: //TCS_HANDSHAKE_NOT
             {
                 socketChannel.writeAndFlush(Handshake.Handler_TCS_HANDSHAKE_NOT());

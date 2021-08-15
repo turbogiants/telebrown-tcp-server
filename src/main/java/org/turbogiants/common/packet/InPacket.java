@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 public class InPacket extends Packet {
 
-    private ByteBuf byteBuf;
+    private final ByteBuf byteBuf;
 
     public InPacket(ByteBuf data) {
         super(data.array());
@@ -48,7 +48,7 @@ public class InPacket extends Packet {
 
     public byte[] decodeArr(int amount) {
         byte[] arr = new byte[amount];
-        for(int i = 0; i < amount; i++) {
+        for (int i = 0; i < amount; i++) {
             arr[i] = byteBuf.readByte();
         }
         return arr;

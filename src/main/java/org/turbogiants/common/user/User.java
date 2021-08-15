@@ -19,12 +19,12 @@ public class User extends NettyUser {
         return lock;
     }
 
-    public void setChannelInstance(Channel channelInstance) {
-        this.channelInstance = channelInstance;
-    }
-
     public Channel getChannelInstance() {
         return channelInstance;
+    }
+
+    public void setChannelInstance(Channel channelInstance) {
+        this.channelInstance = channelInstance;
     }
 
 

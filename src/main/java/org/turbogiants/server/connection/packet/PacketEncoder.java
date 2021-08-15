@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import org.turbogiants.common.packet.OutPacket;
-import org.turbogiants.common.packet.Packet;
 import org.turbogiants.common.user.NettyUser;
 import org.turbogiants.common.crypto.AESCrypto;
 import org.apache.logging.log4j.LogManager;
@@ -37,7 +36,7 @@ public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
                 byteBuf.writeBytes(data);
             } catch (GeneralSecurityException e) {
                 LOGGER.error(e.getLocalizedMessage());
-            } finally{
+            } finally {
                 nettyUser.releaseEncodeState();
             }
         } else {
