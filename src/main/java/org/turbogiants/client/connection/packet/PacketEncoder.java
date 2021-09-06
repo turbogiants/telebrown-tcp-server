@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.turbogiants.client.Client;
 
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantLock;
 
 public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
@@ -28,6 +29,7 @@ public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
         byte[] iv = aesCrypto.getClientIV();
         byte[] data = outPacket.getData();
         try {
+            //LOGGER.info("Encode: " + Arrays.toString(data));
             data = aesCrypto.encrypt(data, iv);
 
             byteBuf.writeBytes(iv);

@@ -1,5 +1,7 @@
 package org.turbogiants.server.connection.network;
 
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.turbogiants.server.user.User;
 import org.turbogiants.common.crypto.AESCrypto;
@@ -27,13 +29,13 @@ public class ServerInit implements Runnable {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
     public static Map<String, Channel> channelPool = new HashMap<>();
-
+    public static final boolean isEPOLL = Epoll.isAvailable();
 
     @Override
     public void run() {
 
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup bossGroup = isEPOLL ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+        EventLoopGroup workerGroup = isEPOLL ? new EpollEventLoopGroup() : new NioEventLoopGroup();
 
         try {
             ServerBootstrap b = new ServerBootstrap();
@@ -44,6 +46,7 @@ public class ServerInit implements Runnable {
                 @Override
                 protected void initChannel(SocketChannel socketChannel) {
                     socketChannel.pipeline().addLast(new IdleStateHandler(15, 15, 15), new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
+                    //socketChannel.pipeline().addLast(new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
 
                     try {
                         byte[] serverIV = AESCrypto.generateIV();

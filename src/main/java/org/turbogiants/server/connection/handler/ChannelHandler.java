@@ -56,7 +56,6 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                     user.close(); // handshake failed
                 else {
                     user.write(oPacket);
-                    user.write(Heartbeat.Handler_TCS_HEARTBEAT_NOT()); // start doing heartbeat
                 }
                 break;
             }

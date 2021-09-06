@@ -4,6 +4,8 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -18,10 +20,10 @@ import org.apache.logging.log4j.Logger;
 public class ClientInit implements Runnable {
     private static final Logger LOGGER = LogManager.getRootLogger();
     public static SocketChannel socketChannel;
-
+    public static final boolean isEPOLL = Epoll.isAvailable();
     @Override
     public void run() {
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = isEPOLL ? new EpollEventLoopGroup() : new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
             b.group(workerGroup);

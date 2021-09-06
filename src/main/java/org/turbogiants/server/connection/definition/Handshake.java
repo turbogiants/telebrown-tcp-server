@@ -7,6 +7,7 @@ import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
 import org.turbogiants.server.user.User;
+import org.turbogiants.server.user.UserDef;
 
 
 public class Handshake {
@@ -18,9 +19,17 @@ public class Handshake {
     }
 
     public static OutPacket Handler_TCS_HANDSHAKE_REQ(User user, InPacket inPacket) {
-        if (!"愛されなくても君がいる".equals(inPacket.decodeString()) &&
-                !"ピノキオピー".equals(inPacket.decodeString()) &&
-                !"初音ミク".equals(inPacket.decodeString())
+        if (!"愛されなくても君がいる".equals(inPacket.decodeString())
+        ) {
+            LOGGER.error("Client(" + user.getIP() + "): Handshake Failed");
+            return null;
+        }
+        if (!"ピノキオピー".equals(inPacket.decodeString())
+        ) {
+            LOGGER.error("Client(" + user.getIP() + "): Handshake Failed");
+            return null;
+        }
+        if (!"初音ミク".equals(inPacket.decodeString())
         ) {
             LOGGER.error("Client(" + user.getIP() + "): Handshake Failed");
             return null;

@@ -58,18 +58,17 @@ public class InPacket extends Packet {
         return byteBuf.readIntLE();
     }
 
+    public int decodeIntBE() {
+        return byteBuf.readInt();
+    }
+
     public short decodeShort() {
         return byteBuf.readShortLE();
     }
 
     public String decodeString(int amount) {
         byte[] bytes = decodeArr(amount);
-        return new String(bytes, StandardCharsets.UTF_16BE);
-//        char[] chars = new char[amount];
-//        for(int i = 0; i < amount; i++) {
-//            chars[i] = (char) bytes[i];
-//        }
-//        return String.valueOf(chars);
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     public String decodeString() {

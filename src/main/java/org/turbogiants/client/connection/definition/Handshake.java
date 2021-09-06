@@ -20,7 +20,8 @@ public class Handshake {
     }
 
     public static void Handler_TCS_HANDSHAKE_ACK() {
-        LOGGER.debug("Handshake Success!");
+        LOGGER.info("Handshake Success!");
+        socketChannel.writeAndFlush(CUser.Handler_TCS_USER_SET_ID_REQ(1100));
     }
 
 }

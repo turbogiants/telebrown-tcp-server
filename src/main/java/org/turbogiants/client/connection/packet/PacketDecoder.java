@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.turbogiants.client.Client;
 
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.List;
 
 public class PacketDecoder extends ByteToMessageDecoder {
@@ -44,6 +45,7 @@ public class PacketDecoder extends ByteToMessageDecoder {
                     try {
                         data = aesCrypto.decrypt(data, aesCrypto.getServerIV());
                         InPacket inPacket = new InPacket(data);
+                        //LOGGER.info("Decode: " + Arrays.toString(data));
                         out.add(inPacket); // send to channel handler
                     } catch (GeneralSecurityException e) {
                         LOGGER.error(e.getLocalizedMessage());

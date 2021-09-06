@@ -13,9 +13,6 @@ import java.util.Arrays;
 public class OutPacket extends Packet {
     private static final Logger LOGGER = LogManager.getRootLogger();
     private final ByteBuf byteBuf;
-    private final boolean loopback = false;
-    //todo: zlib compression
-    private final boolean compression = false;
     private short op;
 
     public OutPacket(short op) {
@@ -97,7 +94,7 @@ public class OutPacket extends Packet {
         if (s == null) {
             s = "";
         }
-        int stringLen = s.getBytes(StandardCharsets.UTF_16BE).length;
+        int stringLen = s.getBytes(StandardCharsets.UTF_8).length;
         if (stringLen > Short.MAX_VALUE) {
             LOGGER.error("Tried to encode a string that is too big.");
             return;
@@ -111,13 +108,7 @@ public class OutPacket extends Packet {
             s = "";
         }
         if (s.length() > 0) {
-            encodeArr(s.getBytes(StandardCharsets.UTF_16BE));
-//            for (char c : s.toCharArray()) {
-//                encodeChar(c);
-//            }
-        }
-        for (int i = s.length(); i < length; i++) {
-            encodeByte((byte) 0);
+            encodeArr(s.getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -147,10 +138,6 @@ public class OutPacket extends Packet {
     @Override
     public int getLength() {
         return getData().length;
-    }
-
-    public boolean isLoopback() {
-        return loopback;
     }
 
     @Override
