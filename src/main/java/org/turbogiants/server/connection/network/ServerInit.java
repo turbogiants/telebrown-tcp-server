@@ -45,7 +45,7 @@ public class ServerInit implements Runnable {
 
                 @Override
                 protected void initChannel(SocketChannel socketChannel) {
-                    socketChannel.pipeline().addLast(new IdleStateHandler(15, 15, 15), new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
+                    socketChannel.pipeline().addLast(new IdleStateHandler(30, 30, 30), new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
                     //socketChannel.pipeline().addLast(new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
 
                     try {

@@ -47,14 +47,14 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
             }
             case 3: //TCS_HEARTBEAT_NOT
             {
-                socketChannel.writeAndFlush(Heartbeat.Handler_TCS_HEARTBEAT_NOT());
+                EventHandler.addFixedRateEvent(
+                        () -> socketChannel.writeAndFlush(Heartbeat.Handler_TCS_HEARTBEAT_NOT()),
+                        15000, 15000);
                 break;
             }
             case 5: //TCS_HEARTBEAT_ACK
             {
-                EventHandler.addEvent(
-                        () -> socketChannel.writeAndFlush(Heartbeat.Handler_TCS_HEARTBEAT_ACK()),
-                        10000);
+                Heartbeat.Handler_TCS_HEARTBEAT_ACK();
                 break;
             }
             case 7: //TCS_USER_SET_ID_ACK

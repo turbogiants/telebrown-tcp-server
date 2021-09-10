@@ -1,5 +1,7 @@
 package org.turbogiants.server.user;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.turbogiants.common.crypto.AESCrypto;
 import org.turbogiants.common.packet.InPacket;
 import io.netty.channel.Channel;
@@ -11,6 +13,8 @@ import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class NettyUser {
+
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
     public static final AttributeKey<AESCrypto> CRYPTO_KEY = AttributeKey.valueOf("A");
     public static final AttributeKey<NettyUser> CLIENT_KEY = AttributeKey.valueOf("C");
@@ -58,6 +62,10 @@ public class NettyUser {
             }
         }
         return null;
+    }
+
+    public static boolean closeByUserID(int id){
+        return userPool.removeIf(nettyUser -> nettyUser.getUserDef().getUID() == id);
     }
 
 
@@ -123,8 +131,15 @@ public class NettyUser {
 
     public void close() {
         if(ch != null){
+            if(userPool.remove(this))
+                LOGGER.info(String.format("Method 1: Client(%s) closed successfully", getIP()));
+            else if(NettyUser.closeByUserID(getUserDef().getUID()))
+                LOGGER.info(String.format("Method 2: Client(%s) closed successfully", getIP()));
+            else{
+                LOGGER.warn(String.format("Method 3: Client(%s) will be forcefully closed", getIP()));
+                setUserDef(null);
+            }
             ch.close();
-            userPool.remove(this);
         }
 
     }

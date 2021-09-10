@@ -25,6 +25,15 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
     private static final Logger LOGGER = LogManager.getRootLogger();
 
     @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception
+    {
+        NettyUser user = ctx.channel().attr(CLIENT_KEY).get();
+        LOGGER.error("Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ") " + "channelInactive");
+        user.close();
+        super.channelInactive(ctx);
+    }
+
+    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable e) {
         NettyUser user = ctx.channel().attr(CLIENT_KEY).get();
         if (e instanceof IOException) {

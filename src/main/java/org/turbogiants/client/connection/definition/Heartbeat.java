@@ -16,7 +16,6 @@ public class Heartbeat {
         return new OutPacket(PacketEnum.TCS_HEARTBEAT_REQ);
     }
 
-    public static OutPacket Handler_TCS_HEARTBEAT_ACK() {
-        return new OutPacket(PacketEnum.TCS_HEARTBEAT_REQ);
+    public static void Handler_TCS_HEARTBEAT_ACK() {
     }
 }
