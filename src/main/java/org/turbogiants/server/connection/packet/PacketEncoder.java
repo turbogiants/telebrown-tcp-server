@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 
 public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
 
@@ -35,7 +36,7 @@ public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
                 byteBuf.writeInt(data.length);
                 byteBuf.writeBytes(data);
             } catch (GeneralSecurityException e) {
-                LOGGER.error(e.getLocalizedMessage());
+                LOGGER.error(Arrays.toString(e.getStackTrace()));
             } finally {
                 nettyUser.releaseEncodeState();
             }

@@ -55,7 +55,7 @@ public final class AESCrypto {
             this.sKey = generateKey();
 
         } catch (GeneralSecurityException e) {
-            LOGGER.error(e.getStackTrace());
+            LOGGER.error(Arrays.toString(e.getStackTrace()));
         }
     }
 

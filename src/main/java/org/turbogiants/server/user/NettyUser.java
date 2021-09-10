@@ -6,20 +6,68 @@ import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
 import org.turbogiants.common.packet.Packet;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class NettyUser {
 
     public static final AttributeKey<AESCrypto> CRYPTO_KEY = AttributeKey.valueOf("A");
-
     public static final AttributeKey<NettyUser> CLIENT_KEY = AttributeKey.valueOf("C");
+
     protected final Channel ch;
     private final ReentrantLock lock;
     private final InPacket inPacket;
     private byte[] serverIV;
     private byte[] clientIV;
     private int storedLength = -1;
+    private UserDef userDef = null;
+
+    // this is not the best sln but it does what i want
+    public static ArrayList<NettyUser> userPool = new ArrayList<>();
+
+    public static boolean isUserIDExists(int id){
+        boolean isExists = false;
+        for (NettyUser nettyUser : userPool) {
+            if (nettyUser.getUserDef() == null)
+                continue;
+            if (nettyUser.getUserDef().getUID() == 0)
+                continue;
+            if (nettyUser.getUserDef().getUID() == id) {
+                isExists = true;
+                break;
+            }
+        }
+        return isExists;
+    }
+
+
+
+    // inferior (need to make this multi thread esp if theres a lot of users)
+    // we can live with this for now as this is only a prototype
+    // then we could just make a limit of how many users per servers (distributed)
+    // after the paper is done
+    public static NettyUser getUserByID(int id){
+        for (NettyUser nettyUser : userPool) {
+            if (nettyUser.getUserDef() == null)
+                continue;
+            if (nettyUser.getUserDef().getUID() == 0)
+                continue;
+            if (nettyUser.getUserDef().getUID() == id) {
+                return nettyUser;
+            }
+        }
+        return null;
+    }
+
+
+    public void setUserDef(UserDef userDef){
+        this.userDef = userDef;
+    }
+
+    public UserDef getUserDef(){
+        return userDef;
+    }
 
     private NettyUser() {
         ch = null;
@@ -33,10 +81,7 @@ public class NettyUser {
         this.clientIV = clientIV;
         this.inPacket = new InPacket();
         lock = new ReentrantLock(true); // note: lock is fair to ensure logical sequence is maintained server-side
-    }
-
-    public final InPacket getReader() {
-        return inPacket;
+        userPool.add(this);
     }
 
     public final int getStoredLength() {
@@ -72,27 +117,31 @@ public class NettyUser {
     }
 
     public void write(Packet msg) {
-        assert ch != null;
-        ch.writeAndFlush(msg);
+        if(ch != null)
+            ch.writeAndFlush(msg);
     }
 
     public void close() {
-        assert ch != null;
-        ch.close();
+        if(ch != null){
+            ch.close();
+            userPool.remove(this);
+        }
+
     }
 
     public String getIP() {
-        assert ch != null;
-        return ch.remoteAddress().toString().split(":")[0].substring(1);
+        if(ch != null)
+            return ch.remoteAddress().toString().split(":")[0].substring(1);
+        return null;
     }
 
     public final void acquireEncoderState() {
-        assert lock != null;
-        lock.lock();
+        if(lock != null)
+            lock.lock();
     }
 
     public final void releaseEncodeState() {
-        assert lock != null;
-        lock.unlock();
+        if(lock != null)
+            lock.unlock();
     }
 }

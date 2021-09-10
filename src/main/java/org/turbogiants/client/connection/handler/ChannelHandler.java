@@ -2,15 +2,14 @@ package org.turbogiants.client.connection.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.turbogiants.client.connection.definition.*;
 import org.turbogiants.common.handler.EventHandler;
 import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.PacketEnum;
-import org.turbogiants.client.connection.definition.CUser;
-import org.turbogiants.client.connection.definition.Comm;
-import org.turbogiants.client.connection.definition.Handshake;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.turbogiants.client.connection.definition.Heartbeat;
+
+import java.util.Arrays;
 
 import static org.turbogiants.client.connection.network.ClientInit.socketChannel;
 
@@ -21,7 +20,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable e) {
-        LOGGER.error(e.getLocalizedMessage());
+        LOGGER.error(Arrays.toString(e.getStackTrace()));
         ctx.close(); //disconnect to server if we have a problem
     }
 
@@ -71,6 +70,11 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
             case 10: //TCS_COMM_MESSAGE_ACK
             {
                 Comm.Handler_TCS_COMM_MESSAGE_ACK(inPacket);
+                break;
+            }
+            case 11: //TCS_COMM_MESSAGE_ACK
+            {
+                Spam.Handler_TCS_SPAM_WARNING_NOT(false);
                 break;
             }
             default:

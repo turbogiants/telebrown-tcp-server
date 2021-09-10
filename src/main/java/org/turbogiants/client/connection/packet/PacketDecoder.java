@@ -48,7 +48,7 @@ public class PacketDecoder extends ByteToMessageDecoder {
                         //LOGGER.info("Decode: " + Arrays.toString(data));
                         out.add(inPacket); // send to channel handler
                     } catch (GeneralSecurityException e) {
-                        LOGGER.error(e.getLocalizedMessage());
+                        LOGGER.error(Arrays.toString(e.getStackTrace()));
                     }
                 }
             }

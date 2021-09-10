@@ -20,6 +20,8 @@ public enum PacketEnum {
     TCS_COMM_MESSAGE_REQ(9),
     TCS_COMM_MESSAGE_ACK(10),
 
+    // Anti-Spam (Make the bug a feature)
+    TCS_SPAM_WARNING_NOT(11),
     ;
 
     private final short packetID;

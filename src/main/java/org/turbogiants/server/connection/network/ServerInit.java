@@ -3,7 +3,6 @@ package org.turbogiants.server.connection.network;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.handler.timeout.IdleStateHandler;
-import org.turbogiants.server.user.User;
 import org.turbogiants.common.crypto.AESCrypto;
 import org.turbogiants.server.connection.definition.Handshake;
 import org.turbogiants.server.connection.handler.ChannelHandler;
@@ -22,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.turbogiants.server.user.NettyUser;
 
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,17 +52,17 @@ public class ServerInit implements Runnable {
                         byte[] serverIV = AESCrypto.generateIV();
                         byte[] clientIV = AESCrypto.generateIV();
 
-                        User user = new User(socketChannel, serverIV, clientIV);
+                        NettyUser user = new NettyUser(socketChannel, serverIV, clientIV);
 
                         channelPool.put(user.getIP(), socketChannel);
                         socketChannel.attr(NettyUser.CLIENT_KEY).set(user);
-                        socketChannel.attr(User.CRYPTO_KEY).set(new AESCrypto());
+                        socketChannel.attr(NettyUser.CRYPTO_KEY).set(new AESCrypto());
 
                         //starts a handshake
                         user.write(Handshake.Handler_TCS_HANDSHAKE_NOT());
 
                     } catch (GeneralSecurityException e) {
-                        LOGGER.error(e.getLocalizedMessage());
+                        LOGGER.error(Arrays.toString(e.getStackTrace()));
                     }
                 }
 
@@ -75,7 +75,7 @@ public class ServerInit implements Runnable {
             f.channel().closeFuture().sync();
 
         } catch (InterruptedException e) {
-            LOGGER.error(e.getLocalizedMessage());
+            LOGGER.error(Arrays.toString(e.getStackTrace()));
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();

@@ -2,6 +2,7 @@ package org.turbogiants.client.cli;
 
 import org.turbogiants.client.connection.definition.CUser;
 import org.turbogiants.client.connection.definition.Comm;
+import org.turbogiants.client.connection.definition.Spam;
 
 import java.util.Scanner;
 
@@ -12,7 +13,8 @@ public class CommandListener implements Runnable {
     private static final String[] strCommandList = {
             "setID",
             "exit",
-            "send"
+            "send",
+            "spam"
     };
 
     private static String strCommand = " ";
@@ -37,6 +39,8 @@ public class CommandListener implements Runnable {
                 }else if ("send".equals(strCommand)) {
                     if(commands.length >= 3)
                         send(Integer.parseInt(commands[1]), commands[2]);
+                } else if ("spam".equals(strCommand)) {
+                        spam();
                 }
             }
 
@@ -50,6 +54,10 @@ public class CommandListener implements Runnable {
 
     private void send(int id, String message) {
         socketChannel.writeAndFlush(Comm.Handler_TCS_COMM_MESSAGE_REQ(id, message));
+    }
+
+    private void spam() {
+        socketChannel.writeAndFlush(Spam.Handler_TCS_SPAM_WARNING_NOT(true));
     }
 
 }

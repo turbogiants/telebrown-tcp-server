@@ -16,6 +16,8 @@ import org.turbogiants.common.utility.Config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Arrays;
+
 
 public class ClientInit implements Runnable {
     private static final Logger LOGGER = LogManager.getRootLogger();
@@ -38,7 +40,7 @@ public class ClientInit implements Runnable {
             ChannelFuture f = b.connect(Config.getSocketIp(), Config.getSocketPort()).sync();
             f.channel().closeFuture().sync();
         } catch (Exception e) {
-            LOGGER.error(e.getLocalizedMessage());
+            LOGGER.error(Arrays.toString(e.getStackTrace()));
         } finally {
             workerGroup.shutdownGracefully();
         }

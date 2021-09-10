@@ -8,16 +8,14 @@ import io.netty.handler.timeout.IdleStateEvent;
 import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
-import org.turbogiants.server.connection.definition.CUser;
-import org.turbogiants.server.connection.definition.Comm;
-import org.turbogiants.server.connection.definition.Handshake;
+import org.turbogiants.server.connection.definition.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.turbogiants.server.connection.definition.Heartbeat;
-import org.turbogiants.server.user.User;
+import org.turbogiants.server.user.NettyUser;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.turbogiants.server.user.NettyUser.CLIENT_KEY;
 
@@ -28,18 +26,18 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable e) {
-        User user = (User) ctx.channel().attr(CLIENT_KEY).get();
+        NettyUser user = ctx.channel().attr(CLIENT_KEY).get();
         if (e instanceof IOException) {
             LOGGER.info("Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ") forcibly closed the application.");
         } else {
-            LOGGER.error("Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ") " + e.getLocalizedMessage());
+            LOGGER.error("Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ") " + Arrays.toString(e.getStackTrace()));
         }
         user.close(); //we should close the client it if it makes a problem
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, InPacket inPacket) {
-        User user = (User) ctx.channel().attr(CLIENT_KEY).get();
+        NettyUser user = ctx.channel().attr(CLIENT_KEY).get();
         short opcode = inPacket.decodeShort();
         PacketEnum packetEnum = PacketEnum.getHeaderByOP(opcode);
         if (packetEnum == null) {
@@ -80,16 +78,23 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                 user.write(Comm.Handler_TCS_COMM_MESSAGE_REQ(user, inPacket));
                 break;
             }
+            case 11:
+            {
+                user.write(Spam.Handler_TCS_SPAM_WARNING_NOT());
+                break;
+            }
 
             default:
                 LOGGER.error("Invalid Packet ID : " + opcode + " - Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ")");
                 user.close();
         }
+
+        inPacket.release();
     }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
-        User user = (User) ctx.channel().attr(CLIENT_KEY).get();
+        NettyUser user = ctx.channel().attr(CLIENT_KEY).get();
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
             if (e.state() == IdleState.READER_IDLE ||

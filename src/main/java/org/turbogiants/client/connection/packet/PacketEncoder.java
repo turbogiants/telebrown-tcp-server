@@ -32,11 +32,17 @@ public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
             //LOGGER.info("Encode: " + Arrays.toString(data));
             data = aesCrypto.encrypt(data, iv);
 
-            byteBuf.writeBytes(iv);
+            //only for test client
+            if (outPacket.getHeader() == 11){
+                byte[] spamIV = new byte[16];
+                byteBuf.writeBytes(spamIV);
+            } else {
+                byteBuf.writeBytes(iv);
+            }
             byteBuf.writeInt(data.length);
             byteBuf.writeBytes(data);
         } catch (GeneralSecurityException e) {
-            LOGGER.error(e.getLocalizedMessage());
+            LOGGER.error(Arrays.toString(e.getStackTrace()));
         } finally {
             lock.unlock();
         }
