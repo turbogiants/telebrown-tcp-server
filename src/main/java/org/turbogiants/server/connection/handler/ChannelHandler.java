@@ -8,10 +8,10 @@ import io.netty.handler.timeout.IdleStateEvent;
 import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
-import org.turbogiants.server.connection.definition.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.turbogiants.server.connection.packet.PacketHandler;
 import org.turbogiants.server.user.NettyUser;
 
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
         switch (opcode) {
             case 1: //TCS_HANDSHAKE_REQ
             {
-                OutPacket oPacket = Handshake.Handler_TCS_HANDSHAKE_REQ(user, inPacket);
+                OutPacket oPacket = PacketHandler.Handler_TCS_HANDSHAKE_REQ(user, inPacket);
                 if (oPacket == null)
                     user.close(); // handshake failed
                 else {
@@ -68,28 +68,28 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
             }
             case 4: //TCS_HEARTBEAT_REQ
             {
-                user.write(Heartbeat.Handler_TCS_HEARTBEAT_REQ());
+                user.write(PacketHandler.Handler_TCS_HEARTBEAT_REQ());
                 break;
             }
             case 6: //TCS_USER_SET_ID_REQ
             {
-                OutPacket oPacket = CUser.Handler_TCS_USER_SET_ID_REQ(user, inPacket);
+                OutPacket oPacket = PacketHandler.Handler_TCS_USER_SET_ID_REQ(user, inPacket);
                 if (oPacket == null)
                     user.close(); // setID is weird
                 else {
                     user.write(oPacket);
-                    user.write(Heartbeat.Handler_TCS_HEARTBEAT_NOT()); // start doing heartbeat
+                    user.write(PacketHandler.Handler_TCS_HEARTBEAT_NOT()); // start doing heartbeat
                 }
                 break;
             }
             case 9: //TCS_COMM_MESSAGE_REQ
             {
-                user.write(Comm.Handler_TCS_COMM_MESSAGE_REQ(user, inPacket));
+                user.write(PacketHandler.Handler_TCS_COMM_MESSAGE_REQ(user, inPacket));
                 break;
             }
             case 11:
             {
-                user.write(Spam.Handler_TCS_SPAM_WARNING_NOT());
+                user.write(PacketHandler.Handler_TCS_SPAM_WARNING_NOT());
                 break;
             }
 

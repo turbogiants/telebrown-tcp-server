@@ -4,7 +4,7 @@ import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.turbogiants.common.crypto.AESCrypto;
-import org.turbogiants.server.connection.definition.Handshake;
+import org.turbogiants.server.connection.packet.PacketHandler;
 import org.turbogiants.server.connection.handler.ChannelHandler;
 import org.turbogiants.server.connection.packet.PacketDecoder;
 import org.turbogiants.server.connection.packet.PacketEncoder;
@@ -59,7 +59,7 @@ public class ServerInit implements Runnable {
                         socketChannel.attr(NettyUser.CRYPTO_KEY).set(new AESCrypto());
 
                         //starts a handshake
-                        user.write(Handshake.Handler_TCS_HANDSHAKE_NOT());
+                        user.write(PacketHandler.Handler_TCS_HANDSHAKE_NOT());
 
                     } catch (GeneralSecurityException e) {
                         LOGGER.error(Arrays.toString(e.getStackTrace()));

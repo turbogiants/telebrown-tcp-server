@@ -2,7 +2,7 @@ package org.turbogiants.client.connection.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import org.turbogiants.client.connection.definition.*;
+import org.turbogiants.client.connection.packet.PacketHandler;
 import org.turbogiants.common.handler.EventHandler;
 import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.PacketEnum;
@@ -37,44 +37,44 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
         switch (opcode) {
             case 0: //TCS_HANDSHAKE_NOT
             {
-                socketChannel.writeAndFlush(Handshake.Handler_TCS_HANDSHAKE_NOT());
+                socketChannel.writeAndFlush(PacketHandler.Handler_TCS_HANDSHAKE_NOT());
                 break;
             }
             case 2: //TCS_HANDSHAKE_ACK
             {
-                Handshake.Handler_TCS_HANDSHAKE_ACK();
+                PacketHandler.Handler_TCS_HANDSHAKE_ACK(inPacket);
                 break;
             }
             case 3: //TCS_HEARTBEAT_NOT
             {
                 EventHandler.addFixedRateEvent(
-                        () -> socketChannel.writeAndFlush(Heartbeat.Handler_TCS_HEARTBEAT_NOT()),
+                        () -> socketChannel.writeAndFlush(PacketHandler.Handler_TCS_HEARTBEAT_NOT()),
                         15000, 15000);
                 break;
             }
             case 5: //TCS_HEARTBEAT_ACK
             {
-                Heartbeat.Handler_TCS_HEARTBEAT_ACK();
+                PacketHandler.Handler_TCS_HEARTBEAT_ACK();
                 break;
             }
             case 7: //TCS_USER_SET_ID_ACK
             {
-                CUser.Handler_TCS_USER_SET_ID_ACK(inPacket);
+                PacketHandler.Handler_TCS_USER_SET_ID_ACK(inPacket);
                 break;
             }
             case 8: //TCS_COMM_MESSAGE_NOT
             {
-                Comm.Handler_TCS_COMM_MESSAGE_NOT(inPacket);
+                PacketHandler.Handler_TCS_COMM_MESSAGE_NOT(inPacket);
                 break;
             }
             case 10: //TCS_COMM_MESSAGE_ACK
             {
-                Comm.Handler_TCS_COMM_MESSAGE_ACK(inPacket);
+                PacketHandler.Handler_TCS_COMM_MESSAGE_ACK(inPacket);
                 break;
             }
             case 11: //TCS_COMM_MESSAGE_ACK
             {
-                Spam.Handler_TCS_SPAM_WARNING_NOT(false);
+                PacketHandler.Handler_TCS_SPAM_WARNING_NOT(false);
                 break;
             }
             default:

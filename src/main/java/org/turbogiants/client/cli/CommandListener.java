@@ -1,8 +1,6 @@
 package org.turbogiants.client.cli;
 
-import org.turbogiants.client.connection.definition.CUser;
-import org.turbogiants.client.connection.definition.Comm;
-import org.turbogiants.client.connection.definition.Spam;
+import org.turbogiants.client.connection.packet.PacketHandler;
 
 import java.util.Scanner;
 
@@ -49,15 +47,15 @@ public class CommandListener implements Runnable {
     }
 
     private void setID(int iID) {
-        socketChannel.writeAndFlush(CUser.Handler_TCS_USER_SET_ID_REQ(iID));
+        socketChannel.writeAndFlush(PacketHandler.Handler_TCS_USER_SET_ID_REQ(iID));
     }
 
     private void send(int id, String message) {
-        socketChannel.writeAndFlush(Comm.Handler_TCS_COMM_MESSAGE_REQ(id, message));
+        socketChannel.writeAndFlush(PacketHandler.Handler_TCS_COMM_MESSAGE_REQ(id, message));
     }
 
     private void spam() {
-        socketChannel.writeAndFlush(Spam.Handler_TCS_SPAM_WARNING_NOT(true));
+        socketChannel.writeAndFlush(PacketHandler.Handler_TCS_SPAM_WARNING_NOT(true));
     }
 
 }
