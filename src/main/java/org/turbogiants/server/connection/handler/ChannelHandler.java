@@ -16,6 +16,7 @@ import org.turbogiants.server.user.NettyUser;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Objects;
 
 import static org.turbogiants.server.user.NettyUser.CLIENT_KEY;
 
@@ -55,49 +56,54 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
             return;
         }
 
-        switch (opcode) {
-            case 1: //TCS_HANDSHAKE_REQ
-            {
-                OutPacket oPacket = PacketHandler.Handler_TCS_HANDSHAKE_REQ(user, inPacket);
-                if (oPacket == null)
-                    user.close(); // handshake failed
-                else {
-                    user.write(oPacket);
+        PacketEnum pEnum = PacketEnum.getHeaderByOP(opcode);
+        if(pEnum != null){
+            switch (Objects.requireNonNull(pEnum)) {
+                case TCS_HANDSHAKE_REQ: //TCS_HANDSHAKE_REQ
+                {
+                    OutPacket oPacket = PacketHandler.Handler_TCS_HANDSHAKE_REQ(user, inPacket);
+                    if (oPacket == null)
+                        user.close(); // handshake failed
+                    else {
+                        user.write(oPacket);
+                    }
+                    break;
                 }
-                break;
-            }
-            case 4: //TCS_HEARTBEAT_REQ
-            {
-                user.write(PacketHandler.Handler_TCS_HEARTBEAT_REQ());
-                break;
-            }
-            case 6: //TCS_USER_SET_ID_REQ
-            {
-                OutPacket oPacket = PacketHandler.Handler_TCS_USER_SET_ID_REQ(user, inPacket);
-                if (oPacket == null)
-                    user.close(); // setID is weird
-                else {
-                    user.write(oPacket);
-                    user.write(PacketHandler.Handler_TCS_HEARTBEAT_NOT()); // start doing heartbeat
+                case TCS_HEARTBEAT_REQ: //TCS_HEARTBEAT_REQ
+                {
+                    user.write(PacketHandler.Handler_TCS_HEARTBEAT_REQ());
+                    break;
                 }
-                break;
-            }
-            case 9: //TCS_COMM_MESSAGE_REQ
-            {
-                user.write(PacketHandler.Handler_TCS_COMM_MESSAGE_REQ(user, inPacket));
-                break;
-            }
-            case 11:
-            {
-                user.write(PacketHandler.Handler_TCS_SPAM_WARNING_NOT());
-                break;
-            }
+                case TCS_USER_SET_ID_REQ: //TCS_USER_SET_ID_REQ
+                {
+                    OutPacket oPacket = PacketHandler.Handler_TCS_USER_SET_ID_REQ(user, inPacket);
+                    if (oPacket == null)
+                        user.close(); // setID is weird
+                    else {
+                        user.write(oPacket);
+                        user.write(PacketHandler.Handler_TCS_HEARTBEAT_NOT()); // start doing heartbeat
+                    }
+                    break;
+                }
+                case TCS_COMM_MESSAGE_REQ: //TCS_COMM_MESSAGE_REQ
+                {
+                    user.write(PacketHandler.Handler_TCS_COMM_MESSAGE_REQ(user, inPacket));
+                    break;
+                }
+                case TCS_SPAM_WARNING_NOT:
+                {
+                    user.write(PacketHandler.Handler_TCS_SPAM_WARNING_NOT());
+                    break;
+                }
 
-            default:
-                LOGGER.error("Invalid Packet ID : " + opcode + " - Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ")");
-                user.close();
+                default:
+                    LOGGER.error("Invalid Packet ID : " + opcode + " - Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ")");
+                    user.close();
+            }
+        } else {
+            LOGGER.error("Invalid Packet ID : " + opcode + " - Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ")");
+            user.close();
         }
-
         inPacket.release();
     }
 
