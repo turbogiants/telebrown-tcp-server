@@ -7,6 +7,7 @@ import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
 import org.turbogiants.common.packet.definitions.*;
+import org.turbogiants.server.user.NettyUser;
 
 import java.util.Date;
 
@@ -19,6 +20,22 @@ public class PacketHandler {
 
 
     private static final Logger LOGGER = LogManager.getRootLogger();
+
+    public static OutPacket Handler_TCS_USER_IS_ONLINE_REQ(int id){
+        TCS_USER_IS_ONLINE_REQ tcsUserIsOnlineReq = new TCS_USER_IS_ONLINE_REQ();
+        tcsUserIsOnlineReq.setUserID(id);
+        return tcsUserIsOnlineReq.serialize(PacketEnum.TCS_USER_IS_ONLINE_REQ);
+    }
+
+    public static void Handler_TCS_USER_IS_ONLINE_ACK(InPacket inPacket){
+        TCS_USER_IS_ONLINE_ACK tcsUserIsOnlineAck = new TCS_USER_IS_ONLINE_ACK();
+        tcsUserIsOnlineAck.deserialize(inPacket);
+        int iOK = tcsUserIsOnlineAck.getiOK();
+        if(TCS_USER_IS_ONLINE_ACK.Status.getStatusByID(iOK) == TCS_USER_IS_ONLINE_ACK.Status.USER_ONLINE)
+            LOGGER.info("Client Online");
+        else
+            LOGGER.info("Client Offline");
+    }
 
     public static OutPacket Handler_TCS_COMM_MESSAGE_REQ(int destID, String message) {
         TCS_COMM_MESSAGE_REQ tcsCommMessageReq = new TCS_COMM_MESSAGE_REQ();

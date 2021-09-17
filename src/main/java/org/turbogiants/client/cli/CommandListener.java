@@ -12,7 +12,8 @@ public class CommandListener implements Runnable {
             "setID",
             "exit",
             "send",
-            "spam"
+            "spam",
+            "olchk"
     };
 
     private static String strCommand = " ";
@@ -34,11 +35,13 @@ public class CommandListener implements Runnable {
 
                 if ("setID".equals(strCommand)) {
                     setID(Integer.parseInt(commands[1]));
-                }else if ("send".equals(strCommand)) {
+                } else if ("send".equals(strCommand)) {
                     if(commands.length >= 3)
                         send(Integer.parseInt(commands[1]), commands[2]);
                 } else if ("spam".equals(strCommand)) {
                         spam();
+                } else if ("olchk".equals(strCommand)) {
+                    olCheck(Integer.parseInt(commands[1]));
                 }
             }
 
@@ -48,6 +51,10 @@ public class CommandListener implements Runnable {
 
     private void setID(int iID) {
         socketChannel.writeAndFlush(PacketHandler.Handler_TCS_USER_SET_ID_REQ(iID));
+    }
+
+    private void olCheck(int id) {
+        socketChannel.writeAndFlush(PacketHandler.Handler_TCS_USER_IS_ONLINE_REQ(id));
     }
 
     private void send(int id, String message) {

@@ -10,15 +10,40 @@ import org.turbogiants.common.packet.definitions.*;
 import org.turbogiants.server.user.NettyUser;
 import org.turbogiants.server.user.UserDef;
 
+
 public class PacketHandler {
     private static final Logger LOGGER = LogManager.getRootLogger();
 
+    public static OutPacket Handler_TCS_USER_IS_ONLINE_REQ(NettyUser nettyUser, InPacket inPacket){
+        TCS_USER_IS_ONLINE_REQ tcsUserIsOnlineReq = new TCS_USER_IS_ONLINE_REQ();
+        tcsUserIsOnlineReq.deserialize(inPacket);
+        int uid = tcsUserIsOnlineReq.getUserID();
+        if(uid <= 0){
+            LOGGER.error("Client(" + nettyUser.getIP() + ") finding id " + uid);
+            return null;
+        }
+        boolean isOnline = NettyUser.isUserIDExists(uid);
+        return Handler_TCS_USER_IS_ONLINE_ACK(isOnline);
+    }
 
-    public static OutPacket Handler_TCS_COMM_MESSAGE_REQ(NettyUser nettyUser, InPacket inPacket) {
+    public static OutPacket Handler_TCS_USER_IS_ONLINE_ACK(boolean isOnline){
+        TCS_USER_IS_ONLINE_ACK tcsUserIsOnlineAck = new TCS_USER_IS_ONLINE_ACK();
+        if(isOnline){
+            tcsUserIsOnlineAck.setiOK(TCS_USER_IS_ONLINE_ACK.Status.USER_ONLINE);
+        } else {
+            tcsUserIsOnlineAck.setiOK(TCS_USER_IS_ONLINE_ACK.Status.USER_OFFLINE);
+        }
+        return tcsUserIsOnlineAck.serialize(PacketEnum.TCS_USER_IS_ONLINE_ACK);
+    }
+
+    public static OutPacket Handler_TCS_COMM_MESSAGE_REQ(InPacket inPacket) {
         TCS_COMM_MESSAGE_REQ tcsCommMessageReq = new TCS_COMM_MESSAGE_REQ();
         tcsCommMessageReq.deserialize(inPacket);
         MessageInfo messageInfo = tcsCommMessageReq.getMessageInfo();
+        return Handler_TCS_COMM_MESSAGE_ACK(messageInfo);
+    }
 
+    public static OutPacket Handler_TCS_COMM_MESSAGE_ACK(MessageInfo messageInfo){
         TCS_COMM_MESSAGE_ACK tcsCommMessageAck = new TCS_COMM_MESSAGE_ACK();
         int destID = messageInfo.getiDestID();
         NettyUser destUser = NettyUser.getUserByID(destID);
@@ -27,11 +52,15 @@ public class PacketHandler {
             //todo: store to db
         } else {
             tcsCommMessageAck.setiOK(TCS_COMM_MESSAGE_ACK.Status.MESSAGE_SENT_SUCCESS);
-            TCS_COMM_MESSAGE_NOT tcsCommMessageNot = new TCS_COMM_MESSAGE_NOT();
-            tcsCommMessageNot.setMessageInfo(messageInfo);
-            destUser.write(tcsCommMessageNot.serialize(PacketEnum.TCS_COMM_MESSAGE_NOT));
+            destUser.write(Handler_TCS_COMM_MESSAGE_NOT(messageInfo));
         }
         return tcsCommMessageAck.serialize(PacketEnum.TCS_COMM_MESSAGE_ACK);
+    }
+
+    public static OutPacket Handler_TCS_COMM_MESSAGE_NOT(MessageInfo messageInfo){
+        TCS_COMM_MESSAGE_NOT tcsCommMessageNot = new TCS_COMM_MESSAGE_NOT();
+        tcsCommMessageNot.setMessageInfo(messageInfo);
+        return tcsCommMessageNot.serialize(PacketEnum.TCS_COMM_MESSAGE_NOT);
     }
 
     public static OutPacket Handler_TCS_USER_SET_ID_REQ(NettyUser nettyUser, InPacket inPacket) {
@@ -47,7 +76,12 @@ public class PacketHandler {
             LOGGER.error("Client(" + nettyUser.getIP() + ") SetID to " + uid + " but already exists");
             return null;
         }
+        return Handler_USER_SET_ID_ACK(userSetIdReq, nettyUser);
+    }
+
+    public static OutPacket Handler_USER_SET_ID_ACK(TCS_USER_SET_ID_REQ tcsUserSetIdReq, NettyUser nettyUser){
         TCS_USER_SET_ID_ACK tcsUserSetIdAck = new TCS_USER_SET_ID_ACK();
+        int uid = tcsUserSetIdReq.getUserID();
         tcsUserSetIdAck.setiOK(TCS_USER_SET_ID_ACK.Status.SET_ID_SUCCESS);
 
         UserDef userDef = new UserDef();
@@ -56,18 +90,6 @@ public class PacketHandler {
 
         LOGGER.info("Client(" + nettyUser.getIP() + ") SetID to " + uid);
         return tcsUserSetIdAck.serialize(PacketEnum.TCS_USER_SET_ID_ACK);
-    }
-
-    public static OutPacket Handler_TCS_USER_IS_ONLINE_REQ(NettyUser user, InPacket inPacket){
-        int uid = inPacket.decodeInt();
-        if(uid <= 0){
-            LOGGER.error("Client(" + user.getIP() + ") finding id " + uid);
-            return null;
-        }
-        OutPacket outPacket = new OutPacket(PacketEnum.TCS_USER_IS_ONLINE_ACK);
-        boolean isOnline = NettyUser.isUserIDExists(uid);
-        outPacket.encodeByte(isOnline);
-        return outPacket;
     }
 
     public static OutPacket Handler_TCS_HANDSHAKE_NOT() {

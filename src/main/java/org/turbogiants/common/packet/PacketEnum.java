@@ -23,6 +23,7 @@ public enum PacketEnum {
     // Anti-Spam (Make the bug a feature)
     TCS_SPAM_WARNING_NOT(11),
 
+    // Online/Offline Checker
     TCS_USER_IS_ONLINE_REQ(12),
     TCS_USER_IS_ONLINE_ACK(13),
 

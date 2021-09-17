@@ -5,6 +5,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
+import org.turbogiants.common.handler.EventHandler;
 import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
@@ -49,50 +50,43 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
     protected void channelRead0(ChannelHandlerContext ctx, InPacket inPacket) {
         NettyUser user = ctx.channel().attr(CLIENT_KEY).get();
         short opcode = inPacket.decodeShort();
-        PacketEnum packetEnum = PacketEnum.getHeaderByOP(opcode);
-        if (packetEnum == null) {
-            LOGGER.error("Invalid Packet ID : " + opcode + " - Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ")");
-            user.close();
-            return;
-        }
-
         PacketEnum pEnum = PacketEnum.getHeaderByOP(opcode);
         if(pEnum != null){
+            OutPacket oPacket = null;
             switch (Objects.requireNonNull(pEnum)) {
-                case TCS_HANDSHAKE_REQ: //TCS_HANDSHAKE_REQ
+                case TCS_HANDSHAKE_REQ:
                 {
-                    OutPacket oPacket = PacketHandler.Handler_TCS_HANDSHAKE_REQ(user, inPacket);
-                    if (oPacket == null)
-                        user.close(); // handshake failed
-                    else {
-                        user.write(oPacket);
-                    }
+                    oPacket = PacketHandler.Handler_TCS_HANDSHAKE_REQ(user, inPacket);
                     break;
                 }
-                case TCS_HEARTBEAT_REQ: //TCS_HEARTBEAT_REQ
+                case TCS_HEARTBEAT_REQ:
                 {
-                    user.write(PacketHandler.Handler_TCS_HEARTBEAT_REQ());
+                    oPacket = PacketHandler.Handler_TCS_HEARTBEAT_REQ();
                     break;
                 }
-                case TCS_USER_SET_ID_REQ: //TCS_USER_SET_ID_REQ
+                case TCS_USER_SET_ID_REQ:
                 {
-                    OutPacket oPacket = PacketHandler.Handler_TCS_USER_SET_ID_REQ(user, inPacket);
+                    oPacket = PacketHandler.Handler_TCS_USER_SET_ID_REQ(user, inPacket);
                     if (oPacket == null)
                         user.close(); // setID is weird
                     else {
-                        user.write(oPacket);
-                        user.write(PacketHandler.Handler_TCS_HEARTBEAT_NOT()); // start doing heartbeat
+                        EventHandler.addEvent(() -> user.write(PacketHandler.Handler_TCS_HEARTBEAT_NOT()), 2500); // start doing heartbeat
                     }
                     break;
                 }
-                case TCS_COMM_MESSAGE_REQ: //TCS_COMM_MESSAGE_REQ
+                case TCS_COMM_MESSAGE_REQ:
                 {
-                    user.write(PacketHandler.Handler_TCS_COMM_MESSAGE_REQ(user, inPacket));
+                    oPacket = PacketHandler.Handler_TCS_COMM_MESSAGE_REQ(inPacket);
                     break;
                 }
                 case TCS_SPAM_WARNING_NOT:
                 {
-                    user.write(PacketHandler.Handler_TCS_SPAM_WARNING_NOT());
+                    oPacket = PacketHandler.Handler_TCS_SPAM_WARNING_NOT();
+                    break;
+                }
+                case TCS_USER_IS_ONLINE_REQ:
+                {
+                    oPacket = PacketHandler.Handler_TCS_USER_IS_ONLINE_REQ(user, inPacket);
                     break;
                 }
 
@@ -100,6 +94,13 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                     LOGGER.error("Invalid Packet ID : " + opcode + " - Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ")");
                     user.close();
             }
+
+            if (oPacket == null)
+                user.close(); // packet error
+            else {
+                user.write(oPacket);
+            }
+
         } else {
             LOGGER.error("Invalid Packet ID : " + opcode + " - Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ")");
             user.close();

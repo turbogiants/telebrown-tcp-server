@@ -5,7 +5,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.turbogiants.client.connection.packet.PacketHandler;
 import org.turbogiants.common.handler.EventHandler;
 import org.turbogiants.common.packet.InPacket;
-import org.turbogiants.common.packet.Packet;
 import org.turbogiants.common.packet.PacketEnum;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,13 +28,6 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, InPacket inPacket) {
         short opcode = inPacket.decodeShort();
-        PacketEnum packetEnum = PacketEnum.getHeaderByOP(opcode);
-        if (packetEnum == null) {
-            LOGGER.error("Invalid Packet ID : " + opcode + " - Client Closing");
-            ctx.close();
-            return;
-        }
-
         PacketEnum pEnum = PacketEnum.getHeaderByOP(opcode);
         if(pEnum != null){
             switch (Objects.requireNonNull(pEnum)) {
@@ -79,6 +71,11 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                 case TCS_SPAM_WARNING_NOT:
                 {
                     PacketHandler.Handler_TCS_SPAM_WARNING_NOT(false);
+                    break;
+                }
+                case TCS_USER_IS_ONLINE_ACK:
+                {
+                    PacketHandler.Handler_TCS_USER_IS_ONLINE_ACK(inPacket);
                     break;
                 }
                 default:
