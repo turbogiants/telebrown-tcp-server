@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import org.turbogiants.common.crypto.AESCrypto;
+import org.turbogiants.common.handler.EventHandler;
 import org.turbogiants.common.packet.OutPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,6 +45,18 @@ public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
         } catch (GeneralSecurityException e) {
             LOGGER.error(Arrays.toString(e.getStackTrace()));
         } finally {
+            //not the best sln find another.
+            long startNow = System.currentTimeMillis();
+            while(Arrays.equals(iv, aesCrypto.getClientIV()))
+            {
+                // basically delaying the unlock method within 1000 ms if the condition in the while statement doesn't
+                // return false within the 1000ms mark then it will proceed on unlocking it. Basically not the best solution.
+                // Queue System is still the better sln for this, but I don't know how I will implement it.
+                if (System.currentTimeMillis() - startNow > 1000){
+                    break;
+                }
+
+            }
             lock.unlock();
         }
     }
