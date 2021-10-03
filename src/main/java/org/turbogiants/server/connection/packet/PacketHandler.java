@@ -10,7 +10,13 @@ import org.turbogiants.common.packet.definitions.*;
 import org.turbogiants.server.user.NettyUser;
 import org.turbogiants.server.user.UserDef;
 
-
+/**
+ * Packet Handler
+ * Desc:
+ * @author https://github.com/Raitou
+ * @version 1.2
+ * @since 1.0
+ */
 public class PacketHandler {
     private static final Logger LOGGER = LogManager.getRootLogger();
 

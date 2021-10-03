@@ -21,11 +21,25 @@ import java.util.Objects;
 
 import static org.turbogiants.server.user.NettyUser.CLIENT_KEY;
 
-
+/**
+ * Date: --.--.--
+ * @author https://github.com/Raitou
+ * @version 1.2
+ * @since 1.0
+ */
 public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
 
+    /**
+     * Date: --.--.--
+     * Desc: Get the singleton instance of log4j
+     * @since 1.0
+     */
     private static final Logger LOGGER = LogManager.getRootLogger();
 
+    /**
+     * Date: --.--.--
+     * Override method from SimpleChannelInbound please check netty.io documentation for more information
+     */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception
     {
@@ -35,6 +49,10 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
         super.channelInactive(ctx);
     }
 
+    /**
+     * Date: --.--.--
+     * Override method from SimpleChannelInbound please check netty.io documentation for more information
+     */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable e) {
         NettyUser user = ctx.channel().attr(CLIENT_KEY).get();
@@ -46,6 +64,11 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
         user.close(); //we should close the client it if it makes a problem
     }
 
+    /**
+     * An override method from SimpleChannelInbound wherein this handles the packet information decoded from
+     * PacketDecoder. This decodes the first 2 bytes (short) of the packet header to get the packet type listed from
+     * the PacketEnum class. Once found it will be given to its respective methods.
+     */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, InPacket inPacket) {
         NettyUser user = ctx.channel().attr(CLIENT_KEY).get();
@@ -108,6 +131,9 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
         inPacket.release();
     }
 
+    /**
+     * Override method from SimpleChannelInbound please check netty.io documentation for more information
+     */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
         NettyUser user = ctx.channel().attr(CLIENT_KEY).get();

@@ -15,11 +15,20 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 
-
+/**
+ * Packet Decoder
+ * Desc:
+ * @author https://github.com/Raitou
+ * @version 1.2
+ * @since 1.0
+ */
 public class PacketDecoder extends ByteToMessageDecoder {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
 
+    /**
+     * Override method from ByteToMessageDecoder please check netty.io documentation for more information
+     */
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf in, List<Object> out) {
         NettyUser nettyUser = channelHandlerContext.channel().attr(NettyUser.CLIENT_KEY).get();
@@ -69,7 +78,9 @@ public class PacketDecoder extends ByteToMessageDecoder {
                     out.add(inPacketSpam);
                 } else {
                     try {
+                        LOGGER.info("Decoder (Before Decryption): " + new String(data));
                         data = aesCrypto.decrypt(data, new IvParameterSpec(nettyUser.getClientIV()));
+                        LOGGER.info("Decoder (After Decryption): " + new String(data));
                     } catch (GeneralSecurityException e) {
                         LOGGER.error(Arrays.toString(e.getStackTrace()));
                     }

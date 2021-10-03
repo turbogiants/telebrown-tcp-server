@@ -7,7 +7,6 @@ import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
 import org.turbogiants.common.packet.definitions.*;
-import org.turbogiants.server.user.NettyUser;
 
 import java.util.Date;
 
@@ -16,7 +15,7 @@ import static org.turbogiants.client.connection.network.ClientInit.socketChannel
 public class PacketHandler {
 
     //test var
-    private static final int iAccountID = 1100;
+    private static final int iAccountID = 1200;
 
 
     private static final Logger LOGGER = LogManager.getRootLogger();

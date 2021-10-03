@@ -12,10 +12,20 @@ import org.apache.logging.log4j.Logger;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 
+/**
+ * Packet Decoder
+ * Desc:
+ * @author https://github.com/Raitou
+ * @version 1.2
+ * @since 1.0
+ */
 public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
 
+    /**
+     * Override method from MessageToByteEncoder please check netty.io documentation for more information
+     */
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, OutPacket outPacket, ByteBuf byteBuf) {
         byte[] data = outPacket.getData();
@@ -27,7 +37,9 @@ public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
                 byte[] sIV = AESCrypto.generateIV();
                 byte[] cIV = AESCrypto.generateIV();
                 nettyUser.acquireEncoderState();
+                LOGGER.info("Encoder (Before Encryption): " + new String(data));
                 data = aesCrypto.encrypt(data, sIV);
+                LOGGER.info("Encoder (After Encryption): " + new String(data));
                 nettyUser.setServerIV(sIV);
                 nettyUser.setClientIV(cIV);
 

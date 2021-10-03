@@ -1,21 +1,33 @@
 package org.turbogiants.common.crypto;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
-import java.security.*;
+import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.KeySpec;
-import java.util.Arrays;
 
+/**
+ * Date: 06.09.2021
+ * Desc: AESCrypto Class manages the Encryption and Decryption of the Packet
+ * @author https://github.com/Raitou
+ * @version 1.2
+ * @since 1.0
+ */
 public final class AESCrypto {
 
-    private static final Logger LOGGER = LogManager.getRootLogger();
     private static final int PASS_KEY_ITER = 4096;
+
+    /**
+     * Date: --.--.--
+     * Desc: Android don't like big keys for some reason reduced the key size by half to fix it
+     */
     private static final char[] PASS_KEY = {
             0x4b04, 0x481d, 0x4c77, 0xd5ef, 0x136f, 0x2eff, 0x2d7e, 0xbe6e, 0xc89c, 0xb9b7, 0xe818, 0xc60a, 0xea96, 0x1751, 0xae47, 0x45fa,
             0x744, 0xf274, 0xf4ad, 0x1a0a, 0x2871, 0xf053, 0x539c, 0x3044, 0x2e8e, 0x7201, 0x3b55, 0x4757, 0x79f7, 0xaf9e, 0x7f9b, 0x65ae,
@@ -49,34 +61,29 @@ public final class AESCrypto {
     private byte[] clientIV; // will be only used by Client
     private byte[] serverIV; // will be only used by Client
 
+    /**
+     * Date: --.--.--
+     * @author https://github.com/Raitou
+     * Desc: Initialization of AESCryptography
+     */
     public AESCrypto() {
         try {
             this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             this.sKey = generateKey();
 
         } catch (GeneralSecurityException e) {
-            LOGGER.error(Arrays.toString(e.getStackTrace()));
-        }
-    }
-
-    public static void main(String[] args) {
-        byte[] data = {0, 0};
-        System.out.println("BaseText: " + Arrays.toString(data));
-        System.out.println("SHA-256: " + getSha256(data));
-        AESCrypto brownyCrypto = new AESCrypto();
-        try {
-            byte[] iv = AESCrypto.generateIV();
-            byte[] enc = brownyCrypto.encrypt(data, iv);
-            System.out.println("EncText: " + new String(enc));
-            System.out.println("SHA-256: " + getSha256(enc));
-            byte[] dec = brownyCrypto.decrypt(enc, iv);
-            System.out.println("DecText: " + Arrays.toString(dec));
-            System.out.println("SHA-256: " + getSha256(dec));
-        } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Date: --.--.--
+     * Desc: Calculation of Sha256 of a packet although this isn't used as PacketReplay and
+     * PacketMasking
+     * @author https://github.com/Raitou
+     * @param byte[] - Byte Input to calculate Checksum
+     * @return String - Sha256 Checksum
+     */
     public static String getSha256(byte[] input) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -92,6 +99,13 @@ public final class AESCrypto {
         }
     }
 
+    /**
+     * Date: --.--.--
+     * Desc: Generation of IV this is used mainly in the server
+     * @author https://github.com/Raitou
+     * @return byte[] IV
+     * @throws GeneralSecurityException
+     */
     public static byte[] generateIV() throws GeneralSecurityException {
         SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
         byte[] byteIV = new byte[16];
@@ -99,42 +113,109 @@ public final class AESCrypto {
         return byteIV;
     }
 
+    /**
+     * Date: --.--.--
+     * Desc: Generation of SecretKey based on the parameters hardcoded in this class
+     * @author https://github.com/Raitou
+     * @return SecretKey
+     * @throws GeneralSecurityException
+     */
     private SecretKey generateKey() throws GeneralSecurityException {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         KeySpec spec = new PBEKeySpec(PASS_KEY, SALT_KEY, PASS_KEY_ITER, SALT_KEY_SIZE);
         return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
     }
 
+    /**
+     * Date: --.--.--
+     * Desc: Encryption of buffer requires IV received from the server or generated
+     * @author https://github.com/Raitou
+     * @param byte[] Byte to Encrypt
+     * @param IvParameterSpec IV
+     * @return byte[] Encrypted Byte
+     * @throws GeneralSecurityException
+     */
     public byte[] encrypt(byte[] byteToEncrypt, IvParameterSpec IV) throws GeneralSecurityException {
         this.cipher.init(Cipher.ENCRYPT_MODE, this.sKey, IV);
         return this.cipher.doFinal(byteToEncrypt);
     }
 
+    /**
+     * Date: --.--.--
+     * Desc: Encryption of buffer requires IV received from the server or generated
+     * @author https://github.com/Raitou
+     * @param byte[] Byte to Encrypt
+     * @param byte[] IV
+     * @return byte[] Encrypted Byte
+     * @throws GeneralSecurityException
+     */
     public byte[] encrypt(byte[] byteToEncrypt, byte[] IV) throws GeneralSecurityException {
         return encrypt(byteToEncrypt, new IvParameterSpec(IV));
     }
 
+    /**
+     * Date: --.--.--
+     * Desc: Decryption of buffer requires IV received from the server or generated
+     * @author https://github.com/Raitou
+     * @param byte[] Byte to Decrypt
+     * @param IvParameterSpec IV
+     * @return byte[] Decrypted Byte
+     * @throws GeneralSecurityException
+     */
     public byte[] decrypt(byte[] byteToDecrypt, IvParameterSpec IV) throws GeneralSecurityException {
         this.cipher.init(Cipher.DECRYPT_MODE, this.sKey, IV);
         return this.cipher.doFinal(byteToDecrypt);
     }
 
+    /**
+     * Date: --.--.--
+     * Desc: Decryption of buffer requires IV received from the server or generated
+     * @author https://github.com/Raitou
+     * @param byteToDecrypt Byte to Decrypt
+     * @param IV Byte IV
+     * @return byte[] Decrypted Byte
+     * @throws GeneralSecurityException
+     */
     public byte[] decrypt(byte[] byteToDecrypt, byte[] IV) throws GeneralSecurityException {
         return decrypt(byteToDecrypt, new IvParameterSpec(IV));
     }
 
+    /**
+     * Date: --.--.--
+     * Desc: Return Server's IV used by both Client and Server
+     * @author https://github.com/Raitou
+     * @return  byte[] ServerIV
+     */
     public byte[] getServerIV() {
         return serverIV;
     }
 
+    /**
+     * Date: --.--.--
+     * Desc: Set Server's IV used by both Client and Server
+     * @author https://github.com/Raitou
+     * @param byte[] ServerIV
+     */
     public void setServerIV(byte[] serverIV) {
         this.serverIV = serverIV;
     }
 
+    /**
+     * Date: --.--.--
+     * Desc: Return's Client's IV used by both Client and Server
+     * @author https://github.com/Raitou
+     * @return byte[] ClientIV
+     */
     public byte[] getClientIV() {
         return clientIV;
     }
 
+    /**
+     * Date: --.--.--
+     * Desc: Set Client's IV used by both Client and Server
+     * @author https://github.com/Raitou
+     * @param byte[] ClientIV
+     */
     public void setClientIV(byte[] clientIV) {
         this.clientIV = clientIV;
     }
