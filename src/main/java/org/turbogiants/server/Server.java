@@ -9,7 +9,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 
-/*** Driver Class
+/**
+ * Driver Class
  * @author https://github.com/Raitou
  * @version 1.0
  */

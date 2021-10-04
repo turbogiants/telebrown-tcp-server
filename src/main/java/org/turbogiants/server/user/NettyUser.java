@@ -12,10 +12,29 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Netty User Class
+ * @author https://github.com/Raitou
+ * Desc: This class manage the exchange of AES Keys and its clients
+ * per object created from this class is a client of this server
+ * @version 1.2
+ * @since 1.0
+ */
 public class NettyUser {
 
+    /**
+     * Date: --.--.--
+     * Desc: Get the singleton instance of log4j
+     * @since 1.0
+     */
     private static final Logger LOGGER = LogManager.getRootLogger();
 
+    /**
+     * Date: --.--.--
+     * Desc: Use of Attribute Key to make sure this class and AESCrypto will be objected for every nettyUser created
+     * by the Server Initializer
+     * @since 1.0
+     */
     public static final AttributeKey<AESCrypto> CRYPTO_KEY = AttributeKey.valueOf("A");
     public static final AttributeKey<NettyUser> CLIENT_KEY = AttributeKey.valueOf("C");
 
@@ -27,7 +46,11 @@ public class NettyUser {
     private int storedLength = -1;
     private UserDef userDef = null;
 
-    // this is not the best sln but it does what i want
+    /**
+     * Date: --.--.--
+     * Desc: This user pool designated to list every single client connected to this server so we can make
+     * @since 1.1
+     */
     public static ArrayList<NettyUser> userPool = new ArrayList<>();
 
     public static boolean isUserIDExists(int id){
@@ -46,11 +69,12 @@ public class NettyUser {
     }
 
 
-
-    // inferior (need to make this multi thread esp if theres a lot of users)
-    // we can live with this for now as this is only a prototype
-    // then we could just make a limit of how many users per servers (distributed)
-    // after the paper is done
+    /**
+     * This function returns a NettyUser object from the userPool of nettyUser object by using the Client ID's to find
+     * the object.
+     * @param id: The Client's ID
+     * @return NettyUser:
+     */
     public static NettyUser getUserByID(int id){
         for (NettyUser nettyUser : userPool) {
             if (nettyUser.getUserDef() == null)

@@ -63,7 +63,6 @@ public final class AESCrypto {
 
     /**
      * Date: --.--.--
-     * @author https://github.com/Raitou
      * Desc: Initialization of AESCryptography
      */
     public AESCrypto() {
@@ -80,9 +79,8 @@ public final class AESCrypto {
      * Date: --.--.--
      * Desc: Calculation of Sha256 of a packet although this isn't used as PacketReplay and
      * PacketMasking
-     * @author https://github.com/Raitou
-     * @param byte[] - Byte Input to calculate Checksum
-     * @return String - Sha256 Checksum
+     * @param input: Byte Input to calculate Checksum
+     * @return String: Sha256 Checksum
      */
     public static String getSha256(byte[] input) {
         try {
@@ -102,9 +100,8 @@ public final class AESCrypto {
     /**
      * Date: --.--.--
      * Desc: Generation of IV this is used mainly in the server
-     * @author https://github.com/Raitou
-     * @return byte[] IV
-     * @throws GeneralSecurityException
+     * @return byte[] IV:
+     * @throws GeneralSecurityException: throws standard Java Security GeneralSecurityException
      */
     public static byte[] generateIV() throws GeneralSecurityException {
         SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
@@ -118,7 +115,7 @@ public final class AESCrypto {
      * Desc: Generation of SecretKey based on the parameters hardcoded in this class
      * @author https://github.com/Raitou
      * @return SecretKey
-     * @throws GeneralSecurityException
+     * @throws GeneralSecurityException: throws standard Java Security GeneralSecurityException
      */
     private SecretKey generateKey() throws GeneralSecurityException {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
@@ -130,10 +127,10 @@ public final class AESCrypto {
      * Date: --.--.--
      * Desc: Encryption of buffer requires IV received from the server or generated
      * @author https://github.com/Raitou
-     * @param byte[] Byte to Encrypt
-     * @param IvParameterSpec IV
+     * @param byteToEncrypt: byteArray data to encrypt
+     * @param IV: An IVParameterSpec object
      * @return byte[] Encrypted Byte
-     * @throws GeneralSecurityException
+     * @throws GeneralSecurityException: throws standard Java Security GeneralSecurityException
      */
     public byte[] encrypt(byte[] byteToEncrypt, IvParameterSpec IV) throws GeneralSecurityException {
         this.cipher.init(Cipher.ENCRYPT_MODE, this.sKey, IV);
@@ -144,10 +141,10 @@ public final class AESCrypto {
      * Date: --.--.--
      * Desc: Encryption of buffer requires IV received from the server or generated
      * @author https://github.com/Raitou
-     * @param byte[] Byte to Encrypt
-     * @param byte[] IV
+     * @param byteToEncrypt: byteArray data to encrypt
+     * @param IV: An byteArray object of 16 bytes
      * @return byte[] Encrypted Byte
-     * @throws GeneralSecurityException
+     * @throws GeneralSecurityException: throws standard Java Security GeneralSecurityException
      */
     public byte[] encrypt(byte[] byteToEncrypt, byte[] IV) throws GeneralSecurityException {
         return encrypt(byteToEncrypt, new IvParameterSpec(IV));
@@ -157,10 +154,10 @@ public final class AESCrypto {
      * Date: --.--.--
      * Desc: Decryption of buffer requires IV received from the server or generated
      * @author https://github.com/Raitou
-     * @param byte[] Byte to Decrypt
-     * @param IvParameterSpec IV
+     * @param byteToDecrypt:
+     * @param IV:
      * @return byte[] Decrypted Byte
-     * @throws GeneralSecurityException
+     * @throws GeneralSecurityException: throws standard Java Security GeneralSecurityException
      */
     public byte[] decrypt(byte[] byteToDecrypt, IvParameterSpec IV) throws GeneralSecurityException {
         this.cipher.init(Cipher.DECRYPT_MODE, this.sKey, IV);
@@ -171,10 +168,10 @@ public final class AESCrypto {
      * Date: --.--.--
      * Desc: Decryption of buffer requires IV received from the server or generated
      * @author https://github.com/Raitou
-     * @param byteToDecrypt Byte to Decrypt
-     * @param IV Byte IV
+     * @param byteToDecrypt: Byte to Decrypt
+     * @param IV: Byte IV
      * @return byte[] Decrypted Byte
-     * @throws GeneralSecurityException
+     * @throws GeneralSecurityException: throws standard Java Security GeneralSecurityException
      */
     public byte[] decrypt(byte[] byteToDecrypt, byte[] IV) throws GeneralSecurityException {
         return decrypt(byteToDecrypt, new IvParameterSpec(IV));
@@ -194,7 +191,7 @@ public final class AESCrypto {
      * Date: --.--.--
      * Desc: Set Server's IV used by both Client and Server
      * @author https://github.com/Raitou
-     * @param byte[] ServerIV
+     * @param serverIV: Setting Server Initial Vector
      */
     public void setServerIV(byte[] serverIV) {
         this.serverIV = serverIV;
@@ -214,7 +211,7 @@ public final class AESCrypto {
      * Date: --.--.--
      * Desc: Set Client's IV used by both Client and Server
      * @author https://github.com/Raitou
-     * @param byte[] ClientIV
+     * @param clientIV: Setting Client Initial Vector
      */
     public void setClientIV(byte[] clientIV) {
         this.clientIV = clientIV;

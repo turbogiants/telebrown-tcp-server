@@ -45,7 +45,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                 {
                     EventHandler.addFixedRateEvent(
                             () -> socketChannel.writeAndFlush(PacketHandler.Handler_TCS_HEARTBEAT_NOT()),
-                            15000, 15000);
+                            160000, 160000);
                     break;
                 }
                 case TCS_HEARTBEAT_ACK:

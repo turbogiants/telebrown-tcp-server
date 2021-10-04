@@ -1,5 +1,6 @@
 package org.turbogiants.server.connection.network;
 
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -49,7 +50,8 @@ public class ServerInit implements Runnable {
     public static final boolean isEPOLL = Epoll.isAvailable();
 
     /**
-     * Standard Initialization of NettyIO TCP Socket
+     * Date: --.--.--
+     * Desc: Standard Initialization of NettyIO TCP Socket
      * see more at NettyIO documentation
      */
     @Override
@@ -73,7 +75,7 @@ public class ServerInit implements Runnable {
                  @Override
                 protected void initChannel(SocketChannel socketChannel) {
 
-                    socketChannel.pipeline().addLast(new IdleStateHandler(30, 30, 30), new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
+                    socketChannel.pipeline().addLast(new IdleStateHandler(0, 0, 180), new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
 
                     try {
                         byte[] serverIV = AESCrypto.generateIV();
@@ -95,6 +97,7 @@ public class ServerInit implements Runnable {
 
             b.childOption(ChannelOption.TCP_NODELAY, true);
             b.childOption(ChannelOption.SO_KEEPALIVE, true);
+            b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 
             ChannelFuture f = b.bind(Config.getSocketIp(), Config.getSocketPort()).sync();
             f.channel().closeFuture().sync();

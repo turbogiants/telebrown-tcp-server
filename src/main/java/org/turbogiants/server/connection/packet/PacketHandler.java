@@ -80,6 +80,11 @@ public class PacketHandler {
         boolean isExists = NettyUser.isUserIDExists(uid);
         if(isExists){
             LOGGER.error("Client(" + nettyUser.getIP() + ") SetID to " + uid + " but already exists");
+
+            //close both client if userIDExists
+            NettyUser user = NettyUser.getUserByID(uid);
+            if (user != null)
+                user.close();
             return null;
         }
         return Handler_USER_SET_ID_ACK(userSetIdReq, nettyUser);

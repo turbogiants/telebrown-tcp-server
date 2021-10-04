@@ -4,6 +4,9 @@ import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
 
+import java.lang.*;
+
+
 public class TCS_COMM_MESSAGE_ACK {
 
     public enum Status{
@@ -50,4 +53,5 @@ public class TCS_COMM_MESSAGE_ACK {
     public void deserialize(InPacket inPacket){
         iOK = inPacket.decodeInt();
     }
+
 }
