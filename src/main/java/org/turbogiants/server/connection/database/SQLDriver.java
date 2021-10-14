@@ -62,23 +62,4 @@ public class SQLDriver {
         }
         return bOK;
     }
-
-    /**
-     * Uses executeQuery: Returns a ResultSet Object
-     * @param statement: SQL statement that needs to be executed.
-     * @param result: Pass-by-Value result object
-     * @return boolean: If the execution is successful or not.
-     */
-    public static boolean query_fetch(String statement, ResultSet result){
-        boolean bOK = true;
-        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
-            PreparedStatement query = con.prepareStatement(statement);
-        ){
-            result = query.executeQuery();
-        }catch(SQLException ex){
-            LOGGER.error(ex.getLocalizedMessage());
-            bOK = false;
-        }
-        return bOK;
-    }
 }

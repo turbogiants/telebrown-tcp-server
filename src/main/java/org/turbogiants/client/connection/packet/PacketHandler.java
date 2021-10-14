@@ -20,6 +20,14 @@ public class PacketHandler {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
 
+
+    public static OutPacket Handler_TCS_COMM_2_MESSAGE_REQ(){
+        TCS_COMM_2_MESSAGE_REQ tcsComm2MessageReq = new TCS_COMM_2_MESSAGE_REQ();
+        tcsComm2MessageReq.setReceiverID(iAccountID);
+        return tcsComm2MessageReq.serialize(PacketEnum.TCS_COMM_2_MESSAGE_REQ);
+    }
+
+
     public static OutPacket Handler_TCS_USER_IS_ONLINE_REQ(int id){
         TCS_USER_IS_ONLINE_REQ tcsUserIsOnlineReq = new TCS_USER_IS_ONLINE_REQ();
         tcsUserIsOnlineReq.setUserID(id);

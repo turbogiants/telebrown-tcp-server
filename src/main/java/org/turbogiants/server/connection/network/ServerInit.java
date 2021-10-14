@@ -42,6 +42,8 @@ public class ServerInit implements Runnable {
      */
     private static final Logger LOGGER = LogManager.getRootLogger();
 
+    private static final PacketHandler PACKET_HANDLER = PacketHandler.getInstance();
+
     /**
      * Date: --.--.--
      * Desc: Check whether EPOLL is available especially in Linux Systems
@@ -86,7 +88,7 @@ public class ServerInit implements Runnable {
                         socketChannel.attr(NettyUser.CLIENT_KEY).set(user);
                         socketChannel.attr(NettyUser.CRYPTO_KEY).set(new AESCrypto());
 
-                        user.write(PacketHandler.Handler_TCS_HANDSHAKE_NOT());
+                        user.write(PACKET_HANDLER.Handler_TCS_HANDSHAKE_NOT());
 
                     } catch (GeneralSecurityException e) {
                         LOGGER.error(Arrays.toString(e.getStackTrace()));

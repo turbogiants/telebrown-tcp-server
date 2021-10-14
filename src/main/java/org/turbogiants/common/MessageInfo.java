@@ -32,10 +32,10 @@ public class MessageInfo {
     }
 
     public void setlUnixTime(long lUnixTime) {
-        this.lUnixTime = lUnixTime / 1000L;
+        this.lUnixTime = lUnixTime;
     }
 
     public long getlUnixTime() {
-        return lUnixTime * 1000L;
+        return lUnixTime;
     }
 }

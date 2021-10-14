@@ -36,6 +36,9 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
      */
     private static final Logger LOGGER = LogManager.getRootLogger();
 
+
+    private static final PacketHandler PACKET_HANDLER = PacketHandler.getInstance();
+
     /**
      * Date: --.--.--
      * Override method from SimpleChannelInbound please check netty.io documentation for more information
@@ -79,40 +82,44 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
             switch (Objects.requireNonNull(pEnum)) {
                 case TCS_HANDSHAKE_REQ:
                 {
-                    oPacket = PacketHandler.Handler_TCS_HANDSHAKE_REQ(user, inPacket);
+                    oPacket = PACKET_HANDLER.Handler_TCS_HANDSHAKE_REQ(user, inPacket);
                     break;
                 }
                 case TCS_HEARTBEAT_REQ:
                 {
-                    oPacket = PacketHandler.Handler_TCS_HEARTBEAT_REQ();
+                    oPacket = PACKET_HANDLER.Handler_TCS_HEARTBEAT_REQ();
                     break;
                 }
                 case TCS_USER_SET_ID_REQ:
                 {
-                    oPacket = PacketHandler.Handler_TCS_USER_SET_ID_REQ(user, inPacket);
+                    oPacket = PACKET_HANDLER.Handler_TCS_USER_SET_ID_REQ(user, inPacket);
                     if (oPacket == null)
                         user.close(); // setID is weird
                     else {
-                        EventHandler.addEvent(() -> user.write(PacketHandler.Handler_TCS_HEARTBEAT_NOT()), 2500); // start doing heartbeat
+                        EventHandler.addEvent(() -> user.write(PACKET_HANDLER.Handler_TCS_HEARTBEAT_NOT()), 2500); // start doing heartbeat
                     }
                     break;
                 }
                 case TCS_COMM_MESSAGE_REQ:
                 {
-                    oPacket = PacketHandler.Handler_TCS_COMM_MESSAGE_REQ(inPacket);
+                    oPacket = PACKET_HANDLER.Handler_TCS_COMM_MESSAGE_REQ(inPacket);
                     break;
                 }
                 case TCS_SPAM_WARNING_NOT:
                 {
-                    oPacket = PacketHandler.Handler_TCS_SPAM_WARNING_NOT();
+                    oPacket = PACKET_HANDLER.Handler_TCS_SPAM_WARNING_NOT();
                     break;
                 }
                 case TCS_USER_IS_ONLINE_REQ:
                 {
-                    oPacket = PacketHandler.Handler_TCS_USER_IS_ONLINE_REQ(user, inPacket);
+                    oPacket = PACKET_HANDLER.Handler_TCS_USER_IS_ONLINE_REQ(user, inPacket);
                     break;
                 }
-
+                case TCS_COMM_2_MESSAGE_REQ:
+                {
+                    oPacket = PACKET_HANDLER.Handler_TCS_COMM_MESSAGE_2_REQ(user, inPacket);
+                    break;
+                }
                 default:
                     LOGGER.error("Invalid Packet ID : " + opcode + " - Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ")");
                     user.close();

@@ -16,7 +16,8 @@ public enum PacketEnum {
     TCS_USER_SET_ID_ACK(7),
 
     // Communication
-    TCS_COMM_MESSAGE_NOT(8),
+    TCS_COMM_MESSAGE_NOT(8), //not used
+
     TCS_COMM_MESSAGE_REQ(9),
     TCS_COMM_MESSAGE_ACK(10),
 
@@ -26,6 +27,10 @@ public enum PacketEnum {
     // Online/Offline Checker
     TCS_USER_IS_ONLINE_REQ(12),
     TCS_USER_IS_ONLINE_ACK(13),
+
+    // Communication_2
+    TCS_COMM_2_MESSAGE_REQ(14),
+    TCS_COMM_2_MESSAGE_ACK(15),
 
     ;
 

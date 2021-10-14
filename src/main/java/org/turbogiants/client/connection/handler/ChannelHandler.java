@@ -78,6 +78,10 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                     PacketHandler.Handler_TCS_USER_IS_ONLINE_ACK(inPacket);
                     break;
                 }
+                case TCS_COMM_2_MESSAGE_ACK:
+                {
+                    break;
+                }
                 default:
                     LOGGER.error("Invalid Packet ID : " + opcode + " - Client Closing");
                     ctx.close();
