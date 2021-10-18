@@ -38,7 +38,7 @@ public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
                 byte[] cIV = AESCrypto.generateIV();
                 nettyUser.acquireEncoderState();
                 LOGGER.info("Encoder (Before Encryption): " + new String(data));
-                data = aesCrypto.encrypt(data, sIV);
+                //data = aesCrypto.encrypt(data, sIV);
                 LOGGER.info("Encoder (After Encryption): " + new String(data));
                 nettyUser.setServerIV(sIV);
                 nettyUser.setClientIV(cIV);

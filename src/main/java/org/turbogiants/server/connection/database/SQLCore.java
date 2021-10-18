@@ -20,7 +20,7 @@ public class SQLCore extends SQLDriver{
     }
 
     public boolean addMessage(MessageInfo messageInfo){
-        String statement = String.format("INSERT INTO messagehistory(senderID, recipientID, message, TIMESTAMP) VALUES(%d, %d, \"%s\", \"%s\")",
+        String statement = String.format("INSERT INTO messagehistory(senderID, recipientID, message, TIMESTAMP) VALUES(%d, %d, \"%s\", %d)",
                 messageInfo.getOwnerID(),
                 messageInfo.getDestID(),
                 messageInfo.getMessage(),
@@ -30,9 +30,12 @@ public class SQLCore extends SQLDriver{
         return query(statement, affectedRows);
     }
 
-    public boolean updateMessageStatus(int iReceiverID){
-        String statement = String.format("UPDATE messagehistory SET STATUS = 0 WHERE recipientID = %d",
-                iReceiverID
+    public boolean updateMessageStatus(MessageInfo messageInfo){
+        String statement = String.format("UPDATE messagehistory SET STATUS = 0 WHERE senderID = %d AND recipientID = %d message = \"%s\" AND TIMESTAMP = %d",
+                messageInfo.getOwnerID(),
+                messageInfo.getDestID(),
+                messageInfo.getMessage(),
+                messageInfo.getUnixTime()
         );
         Integer affectedRows = 0;
         return query(statement, affectedRows);

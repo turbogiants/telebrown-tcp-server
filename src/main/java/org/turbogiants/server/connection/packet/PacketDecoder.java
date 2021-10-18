@@ -40,19 +40,19 @@ public class PacketDecoder extends ByteToMessageDecoder {
                 if (in.readableBytes() >= 16) {
                     in.readBytes(clientIV);
                     int length = in.readInt();
-                    if (nettyUser.checkClientIV(clientIV)) {
-                        isSpam = true;
-                        nettyUser.getUserDef().addSpamCnt();
-                        LOGGER.warn(String.format("[PacketDecoder] | Incorrect IV! Warning Client %s (%d/%d).",
-                                nettyUser.getIP(),
-                                nettyUser.getUserDef().getSpamCnt(),
-                                UserDef.SPAM_THRESHOLD));
-                        if(nettyUser.getUserDef().isSpamThresholdMet()) {
-                            LOGGER.error(String.format("[PacketDecoder] | Incorrect IV! Dropping client %s.", nettyUser.getIP()));
-                            nettyUser.close();
-                            return;
-                        }
-                    }
+//                    if (nettyUser.checkClientIV(clientIV)) {
+//                        isSpam = true;
+//                        nettyUser.getUserDef().addSpamCnt();
+//                        LOGGER.warn(String.format("[PacketDecoder] | Incorrect IV! Warning Client %s (%d/%d).",
+//                                nettyUser.getIP(),
+//                                nettyUser.getUserDef().getSpamCnt(),
+//                                UserDef.SPAM_THRESHOLD));
+//                        if(nettyUser.getUserDef().isSpamThresholdMet()) {
+//                            LOGGER.error(String.format("[PacketDecoder] | Incorrect IV! Dropping client %s.", nettyUser.getIP()));
+//                            nettyUser.close();
+//                            return;
+//                        }
+//                    }
                     nettyUser.setStoredLength(length);
                 } else {
                     return;
@@ -64,11 +64,11 @@ public class PacketDecoder extends ByteToMessageDecoder {
                 nettyUser.setStoredLength(-1);
 
                 if (isSpam) {
-                    try {
-                        data = aesCrypto.decrypt(data, new IvParameterSpec(clientIV));
-                    } catch (GeneralSecurityException e) {
-                        LOGGER.error(Arrays.toString(e.getStackTrace()));
-                    }
+//                    try {
+//                        data = aesCrypto.decrypt(data, new IvParameterSpec(clientIV));
+//                    } catch (GeneralSecurityException e) {
+//                        LOGGER.error(Arrays.toString(e.getStackTrace()));
+//                    }
                     byte[] dataSpam = new byte[]{
                         0x0B, 0x00 //Spam Packet ID
                     };
@@ -77,13 +77,13 @@ public class PacketDecoder extends ByteToMessageDecoder {
                     InPacket inPacketSpam = new InPacket(dataSpam);
                     out.add(inPacketSpam);
                 } else {
-                    try {
-                        LOGGER.info("Decoder (Before Decryption): " + new String(data));
-                        data = aesCrypto.decrypt(data, new IvParameterSpec(nettyUser.getClientIV()));
-                        LOGGER.info("Decoder (After Decryption): " + new String(data));
-                    } catch (GeneralSecurityException e) {
-                        LOGGER.error(Arrays.toString(e.getStackTrace()));
-                    }
+//                    try {
+//                        LOGGER.info("Decoder (Before Decryption): " + new String(data));
+//                        data = aesCrypto.decrypt(data, new IvParameterSpec(nettyUser.getClientIV()));
+//                        LOGGER.info("Decoder (After Decryption): " + new String(data));
+//                    } catch (GeneralSecurityException e) {
+//                        LOGGER.error(Arrays.toString(e.getStackTrace()));
+//                    }
                     if(nettyUser.getUserDef() != null)
                         nettyUser.getUserDef().reduceSpamCnt();
                     InPacket inPacket = new InPacket(data);

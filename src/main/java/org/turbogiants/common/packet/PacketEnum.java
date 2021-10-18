@@ -66,8 +66,8 @@ public enum PacketEnum {
     TCS_COMM_2_MESSAGE_ACK(15),
 
     /**
-     * Communication Message Package 3 - these packet headers is used to notify the server the message has been received
-     * successfully.
+     * Communication Message Package 3 - these packet headers is used to notify the server the message/s has/have been
+     * received successfully.
      */
     TCS_COMM_3_MESSAGE_REQ(16),
     TCS_COMM_3_MESSAGE_ACK(17),
