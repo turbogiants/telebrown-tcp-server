@@ -47,10 +47,10 @@ public class PacketHandler {
     public static OutPacket Handler_TCS_COMM_MESSAGE_REQ(int destID, String message) {
         TCS_COMM_MESSAGE_REQ tcsCommMessageReq = new TCS_COMM_MESSAGE_REQ();
         MessageInfo messageInfo = new MessageInfo();
-        messageInfo.setiDestID(destID);
-        messageInfo.setiOwnerID(iAccountID);
-        messageInfo.setlUnixTime(System.currentTimeMillis());
-        messageInfo.setStrMessage(message);
+        messageInfo.setDestID(destID);
+        messageInfo.setOwnerID(iAccountID);
+        messageInfo.setUnixTime(System.currentTimeMillis());
+        messageInfo.setMessage(message);
         tcsCommMessageReq.setMessageInfo(messageInfo);
         return tcsCommMessageReq.serialize(PacketEnum.TCS_COMM_MESSAGE_REQ);
     }
@@ -70,9 +70,9 @@ public class PacketHandler {
         TCS_COMM_MESSAGE_NOT tcsCommMessageNot = new TCS_COMM_MESSAGE_NOT();
         tcsCommMessageNot.deserialize(inPacket);
         MessageInfo messageInfo = tcsCommMessageNot.getMessageInfo();
-        int iOwnerID = messageInfo.getiOwnerID();
-        long lUnixTime = messageInfo.getlUnixTime();
-        String strMessage = messageInfo.getStrMessage();
+        int iOwnerID = messageInfo.getOwnerID();
+        long lUnixTime = messageInfo.getUnixTime();
+        String strMessage = messageInfo.getMessage();
         Date date = new Date(lUnixTime);
         LOGGER.info("Message from (" + date.toString() + ")" + iOwnerID + " : " + strMessage);
     }

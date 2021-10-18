@@ -24,7 +24,7 @@ import static org.turbogiants.server.user.NettyUser.CLIENT_KEY;
 /**
  * Date: --.--.--
  * @author https://github.com/Raitou
- * @version 1.2
+ * @version 1.4
  * @since 1.0
  */
 public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
@@ -36,7 +36,11 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
      */
     private static final Logger LOGGER = LogManager.getRootLogger();
 
-
+    /**
+     * Date: --.--.--
+     * Desc: Get the singleton instance of PacketHandler
+     * @since 1.4
+     */
     private static final PacketHandler PACKET_HANDLER = PacketHandler.getInstance();
 
     /**
@@ -76,7 +80,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
     protected void channelRead0(ChannelHandlerContext ctx, InPacket inPacket) {
         NettyUser user = ctx.channel().attr(CLIENT_KEY).get();
         short opcode = inPacket.decodeShort();
-        PacketEnum pEnum = PacketEnum.getHeaderByOP(opcode);
+        PacketEnum pEnum = PacketEnum.checkHeaderByOP(opcode);
         if(pEnum != null){
             OutPacket oPacket = null;
             switch (Objects.requireNonNull(pEnum)) {

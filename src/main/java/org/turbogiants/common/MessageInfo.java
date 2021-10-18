@@ -7,35 +7,35 @@ public class MessageInfo {
 
     private long lUnixTime;
 
-    public void setiDestID(int iID) {
+    public void setDestID(int iID) {
         this.iDestID = iID;
     }
 
-    public int getiDestID() {
+    public int getDestID() {
         return iDestID;
     }
 
-    public void setiOwnerID(int iID) {
+    public void setOwnerID(int iID) {
         this.iOwnerID = iID;
     }
 
-    public int getiOwnerID() {
+    public int getOwnerID() {
         return iOwnerID;
     }
 
-    public void setStrMessage(String strMessage) {
+    public void setMessage(String strMessage) {
         this.strMessage = strMessage;
     }
 
-    public String getStrMessage(){
+    public String getMessage(){
         return strMessage;
     }
 
-    public void setlUnixTime(long lUnixTime) {
+    public void setUnixTime(long lUnixTime) {
         this.lUnixTime = lUnixTime;
     }
 
-    public long getlUnixTime() {
+    public long getUnixTime() {
         return lUnixTime;
     }
 }

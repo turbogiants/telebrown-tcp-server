@@ -28,7 +28,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, InPacket inPacket) {
         short opcode = inPacket.decodeShort();
-        PacketEnum pEnum = PacketEnum.getHeaderByOP(opcode);
+        PacketEnum pEnum = PacketEnum.checkHeaderByOP(opcode);
         if(pEnum != null){
             switch (Objects.requireNonNull(pEnum)) {
                 case TCS_HANDSHAKE_NOT:

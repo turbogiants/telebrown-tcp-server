@@ -142,7 +142,7 @@ public class OutPacket extends Packet {
 
     @Override
     public String toString() {
-        return String.format("%s, %s/0x%s\t| %s", PacketEnum.getHeaderByOP(op), op, Integer.toHexString(op).toUpperCase()
+        return String.format("%s, %s/0x%s\t| %s", PacketEnum.checkHeaderByOP(op), op, Integer.toHexString(op).toUpperCase()
                 , readableByteArray(Arrays.copyOfRange(getData(), 2, getData().length)));
     }
 

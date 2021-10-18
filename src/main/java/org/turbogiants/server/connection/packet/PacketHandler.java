@@ -15,9 +15,9 @@ import java.util.ArrayList;
 
 /**
  * Packet Handler
- * Desc:
+ * Desc: Singleton Class wherein this will process packets from the ChannelHandler
  * @author https://github.com/Raitou
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public class PacketHandler {
@@ -34,12 +34,9 @@ public class PacketHandler {
         return instance;
     }
 
-    public OutPacket Handler_TCS_COMM_2_MESSAGE_ACK(int iReceiverID){
+    public OutPacket Handler_TCS_COMM_2_MESSAGE_ACK(){
         TCS_COMM_2_MESSAGE_ACK tcsComm2MessageAck = new TCS_COMM_2_MESSAGE_ACK();
-        if(SQLCore.getInstance().updateMessageStatus(iReceiverID))
-            tcsComm2MessageAck.setiOK(TCS_COMM_2_MESSAGE_ACK.Status.MESSAGE_RECEIVED_SUCCESS);
-        else
-            tcsComm2MessageAck.setiOK(TCS_COMM_2_MESSAGE_ACK.Status.MESSAGE_RECEIVED_FAILED);
+        tcsComm2MessageAck.setiOK(TCS_COMM_2_MESSAGE_ACK.Status.MESSAGE_RECEIVED_SUCCESS);
         return tcsComm2MessageAck.serialize(PacketEnum.TCS_COMM_2_MESSAGE_ACK);
     }
 
@@ -52,7 +49,7 @@ public class PacketHandler {
                 nettyUser.write(Handler_TCS_COMM_MESSAGE_NOT(messageInfo));
             }
         }
-        return Handler_TCS_COMM_2_MESSAGE_ACK(tcsComm2MessageReq.getReceiverID());
+        return Handler_TCS_COMM_2_MESSAGE_ACK();
     }
 
     public OutPacket Handler_TCS_USER_IS_ONLINE_REQ(NettyUser nettyUser, InPacket inPacket){
