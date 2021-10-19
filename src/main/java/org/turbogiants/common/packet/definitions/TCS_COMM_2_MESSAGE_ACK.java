@@ -4,12 +4,11 @@ import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
 
-
-public class TCS_COMM_MESSAGE_ACK {
+public class TCS_COMM_2_MESSAGE_ACK {
 
     public enum Status{
-        MESSAGE_SENT_FAILED(-1),
-        MESSAGE_SENT_SUCCESS(0),
+        MESSAGE_RECEIVED_FAILED(-1),
+        MESSAGE_RECEIVED_SUCCESS(0),
         ;
 
         private final int statusID;
@@ -51,5 +50,4 @@ public class TCS_COMM_MESSAGE_ACK {
     public void deserialize(InPacket inPacket){
         iOK = inPacket.decodeInt();
     }
-
 }

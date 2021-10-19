@@ -13,6 +13,7 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class PacketDecoder extends ByteToMessageDecoder {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
@@ -42,14 +43,14 @@ public class PacketDecoder extends ByteToMessageDecoder {
                 if (in.readableBytes() >= packetLength) {
                     byte[] data = new byte[packetLength];
                     in.readBytes(data);
-                    try {
-                        data = aesCrypto.decrypt(data, aesCrypto.getServerIV());
+                   // try {
+                        //data = aesCrypto.decrypt(data, aesCrypto.getServerIV());
                         InPacket inPacket = new InPacket(data);
                         //LOGGER.info("Decode: " + Arrays.toString(data));
                         out.add(inPacket); // send to channel handler
-                    } catch (GeneralSecurityException e) {
-                        LOGGER.error(Arrays.toString(e.getStackTrace()));
-                    }
+                    //} catch (GeneralSecurityException e) {
+                    //    LOGGER.error(Arrays.toString(e.getStackTrace()));
+                   // }
                 }
             }
         }

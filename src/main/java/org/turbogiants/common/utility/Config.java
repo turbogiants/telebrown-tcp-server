@@ -27,6 +27,7 @@ public class Config {
 
     // CONFIG DEFAULT VALUES
     private static String databaseIp = "127.0.0.1";
+    private static String databaseName = "telebrown";
     private static Integer databasePort = 3306;
     private static String databaseUsername = "root";
     private static String databasePassword = "root";
@@ -40,6 +41,7 @@ public class Config {
         configBuilder
                 .add("databaseIp", databaseIp)
                 .add("databasePort", databasePort)
+                .add("databaseName", databaseName)
                 .add("databaseUsername", databaseUsername)
                 .add("databasePassword", databasePassword)
                 .add("socketIp", socketIp)
@@ -84,6 +86,26 @@ public class Config {
         }
     }
 
+    public static String getDatabaseIp() {
+        return databaseIp;
+    }
+
+    public static Integer getDatabasePort() {
+        return databasePort;
+    }
+
+    public static String getDatabaseName(){
+        return databaseName;
+    }
+
+    public static String getDatabaseUsername() {
+        return databaseUsername;
+    }
+
+    public static String getDatabasePassword() {
+        return databasePassword;
+    }
+
     public static Integer getSocketPort() {
         return socketPort;
     }
@@ -102,6 +124,7 @@ public class Config {
 
                 databaseIp = jsonObject.getString("databaseIp");
                 databasePort = jsonObject.getInt("databasePort");
+                databaseName = jsonObject.getString("databaseName");
                 databaseUsername = jsonObject.getString("databaseUsername");
                 databasePassword = jsonObject.getString("databasePassword");
                 socketIp = jsonObject.getString("socketIp");

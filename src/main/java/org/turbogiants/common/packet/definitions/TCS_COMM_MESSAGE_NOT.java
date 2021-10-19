@@ -18,19 +18,19 @@ public class TCS_COMM_MESSAGE_NOT {
 
     public OutPacket serialize(PacketEnum header){
         OutPacket outPacket = new OutPacket(header);
-        outPacket.encodeInt(messageInfo.getiDestID());
-        outPacket.encodeInt(messageInfo.getiOwnerID());
-        outPacket.encodeLong(messageInfo.getlUnixTime());
-        outPacket.encodeString(messageInfo.getStrMessage());
+        outPacket.encodeInt(messageInfo.getDestID());
+        outPacket.encodeInt(messageInfo.getOwnerID());
+        outPacket.encodeLong(messageInfo.getUnixTime());
+        outPacket.encodeString(messageInfo.getMessage());
         return outPacket;
     }
 
     public void deserialize(InPacket inPacket){
         MessageInfo messageInfo = new MessageInfo();
-        messageInfo.setiDestID(inPacket.decodeInt());
-        messageInfo.setiOwnerID(inPacket.decodeInt());
-        messageInfo.setlUnixTime(inPacket.decodeLong());
-        messageInfo.setStrMessage(inPacket.decodeString());
+        messageInfo.setDestID(inPacket.decodeInt());
+        messageInfo.setOwnerID(inPacket.decodeInt());
+        messageInfo.setUnixTime(inPacket.decodeLong());
+        messageInfo.setMessage(inPacket.decodeString());
         this.messageInfo = messageInfo;
     }
 }

@@ -21,11 +21,32 @@ import java.util.Objects;
 
 import static org.turbogiants.server.user.NettyUser.CLIENT_KEY;
 
-
+/**
+ * Date: --.--.--
+ * @author https://github.com/Raitou
+ * @version 1.4
+ * @since 1.0
+ */
 public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
 
+    /**
+     * Date: --.--.--
+     * Desc: Get the singleton instance of log4j
+     * @since 1.0
+     */
     private static final Logger LOGGER = LogManager.getRootLogger();
 
+    /**
+     * Date: --.--.--
+     * Desc: Get the singleton instance of PacketHandler
+     * @since 1.4
+     */
+    private static final PacketHandler PACKET_HANDLER = PacketHandler.getInstance();
+
+    /**
+     * Date: --.--.--
+     * Override method from SimpleChannelInbound please check netty.io documentation for more information
+     */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception
     {
@@ -35,6 +56,10 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
         super.channelInactive(ctx);
     }
 
+    /**
+     * Date: --.--.--
+     * Override method from SimpleChannelInbound please check netty.io documentation for more information
+     */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable e) {
         NettyUser user = ctx.channel().attr(CLIENT_KEY).get();
@@ -46,50 +71,64 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
         user.close(); //we should close the client it if it makes a problem
     }
 
+    /**
+     * An override method from SimpleChannelInbound wherein this handles the packet information decoded from
+     * PacketDecoder. This decodes the first 2 bytes (short) of the packet header to get the packet type listed from
+     * the PacketEnum class. Once found it will be given to its respective methods.
+     */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, InPacket inPacket) {
         NettyUser user = ctx.channel().attr(CLIENT_KEY).get();
         short opcode = inPacket.decodeShort();
-        PacketEnum pEnum = PacketEnum.getHeaderByOP(opcode);
+        PacketEnum pEnum = PacketEnum.checkHeaderByOP(opcode);
         if(pEnum != null){
             OutPacket oPacket = null;
             switch (Objects.requireNonNull(pEnum)) {
                 case TCS_HANDSHAKE_REQ:
                 {
-                    oPacket = PacketHandler.Handler_TCS_HANDSHAKE_REQ(user, inPacket);
+                    oPacket = PACKET_HANDLER.Handler_TCS_HANDSHAKE_REQ(user, inPacket);
                     break;
                 }
                 case TCS_HEARTBEAT_REQ:
                 {
-                    oPacket = PacketHandler.Handler_TCS_HEARTBEAT_REQ();
+                    oPacket = PACKET_HANDLER.Handler_TCS_HEARTBEAT_REQ();
                     break;
                 }
                 case TCS_USER_SET_ID_REQ:
                 {
-                    oPacket = PacketHandler.Handler_TCS_USER_SET_ID_REQ(user, inPacket);
+                    oPacket = PACKET_HANDLER.Handler_TCS_USER_SET_ID_REQ(user, inPacket);
                     if (oPacket == null)
                         user.close(); // setID is weird
                     else {
-                        EventHandler.addEvent(() -> user.write(PacketHandler.Handler_TCS_HEARTBEAT_NOT()), 2500); // start doing heartbeat
+                        EventHandler.addEvent(() -> user.write(PACKET_HANDLER.Handler_TCS_HEARTBEAT_NOT()), 2500); // start doing heartbeat
                     }
                     break;
                 }
                 case TCS_COMM_MESSAGE_REQ:
                 {
-                    oPacket = PacketHandler.Handler_TCS_COMM_MESSAGE_REQ(inPacket);
+                    oPacket = PACKET_HANDLER.Handler_TCS_COMM_MESSAGE_REQ(inPacket);
                     break;
                 }
                 case TCS_SPAM_WARNING_NOT:
                 {
-                    oPacket = PacketHandler.Handler_TCS_SPAM_WARNING_NOT();
+                    oPacket = PACKET_HANDLER.Handler_TCS_SPAM_WARNING_NOT();
                     break;
                 }
                 case TCS_USER_IS_ONLINE_REQ:
                 {
-                    oPacket = PacketHandler.Handler_TCS_USER_IS_ONLINE_REQ(user, inPacket);
+                    oPacket = PACKET_HANDLER.Handler_TCS_USER_IS_ONLINE_REQ(user, inPacket);
                     break;
                 }
-
+                case TCS_COMM_2_MESSAGE_REQ:
+                {
+                    oPacket = PACKET_HANDLER.Handler_TCS_COMM_MESSAGE_2_REQ(user, inPacket);
+                    break;
+                }
+                case TCS_COMM_3_MESSAGE_REQ:
+                {
+                    oPacket = PACKET_HANDLER.Handler_TCS_COMM_3_MESSAGE_REQ(inPacket);
+                    break;
+                }
                 default:
                     LOGGER.error("Invalid Packet ID : " + opcode + " - Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ")");
                     user.close();
@@ -108,6 +147,9 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
         inPacket.release();
     }
 
+    /**
+     * Override method from SimpleChannelInbound please check netty.io documentation for more information
+     */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
         NettyUser user = ctx.channel().attr(CLIENT_KEY).get();

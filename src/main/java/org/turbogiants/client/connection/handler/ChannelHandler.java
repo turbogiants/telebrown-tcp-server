@@ -19,6 +19,13 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
 
     private static final Logger LOGGER = LogManager.getRootLogger();
 
+    /**
+     * Date: --.--.--
+     * Desc: Get the singleton instance of PacketHandler
+     * @since 1.4
+     */
+    private static final PacketHandler PACKET_HANDLER = PacketHandler.getInstance();
+
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable e) {
         LOGGER.error(Arrays.toString(e.getStackTrace()));
@@ -28,54 +35,64 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, InPacket inPacket) {
         short opcode = inPacket.decodeShort();
-        PacketEnum pEnum = PacketEnum.getHeaderByOP(opcode);
+        PacketEnum pEnum = PacketEnum.checkHeaderByOP(opcode);
         if(pEnum != null){
             switch (Objects.requireNonNull(pEnum)) {
                 case TCS_HANDSHAKE_NOT:
                 {
-                    socketChannel.writeAndFlush(PacketHandler.Handler_TCS_HANDSHAKE_NOT());
+                    socketChannel.writeAndFlush(PACKET_HANDLER.Handler_TCS_HANDSHAKE_NOT());
                     break;
                 }
                 case TCS_HANDSHAKE_ACK:
                 {
-                    PacketHandler.Handler_TCS_HANDSHAKE_ACK(inPacket);
+                    PACKET_HANDLER.Handler_TCS_HANDSHAKE_ACK(inPacket);
                     break;
                 }
                 case TCS_HEARTBEAT_NOT:
                 {
                     EventHandler.addFixedRateEvent(
-                            () -> socketChannel.writeAndFlush(PacketHandler.Handler_TCS_HEARTBEAT_NOT()),
-                            15000, 15000);
+                            () -> socketChannel.writeAndFlush(PACKET_HANDLER.Handler_TCS_HEARTBEAT_NOT()),
+                            160000, 160000);
                     break;
                 }
                 case TCS_HEARTBEAT_ACK:
                 {
-                    PacketHandler.Handler_TCS_HEARTBEAT_ACK();
+                    PACKET_HANDLER.Handler_TCS_HEARTBEAT_ACK();
                     break;
                 }
                 case TCS_USER_SET_ID_ACK:
                 {
-                    PacketHandler.Handler_TCS_USER_SET_ID_ACK(inPacket);
+                    PACKET_HANDLER.Handler_TCS_USER_SET_ID_ACK(inPacket);
                     break;
                 }
                 case TCS_COMM_MESSAGE_NOT:
                 {
-                    PacketHandler.Handler_TCS_COMM_MESSAGE_NOT(inPacket);
+                    socketChannel.writeAndFlush(PACKET_HANDLER.Handler_TCS_COMM_MESSAGE_NOT(inPacket));
                     break;
                 }
                 case TCS_COMM_MESSAGE_ACK:
                 {
-                    PacketHandler.Handler_TCS_COMM_MESSAGE_ACK(inPacket);
+                    PACKET_HANDLER.Handler_TCS_COMM_MESSAGE_ACK(inPacket);
                     break;
                 }
                 case TCS_SPAM_WARNING_NOT:
                 {
-                    PacketHandler.Handler_TCS_SPAM_WARNING_NOT(false);
+                    PACKET_HANDLER.Handler_TCS_SPAM_WARNING_NOT(false);
                     break;
                 }
                 case TCS_USER_IS_ONLINE_ACK:
                 {
-                    PacketHandler.Handler_TCS_USER_IS_ONLINE_ACK(inPacket);
+                    PACKET_HANDLER.Handler_TCS_USER_IS_ONLINE_ACK(inPacket);
+                    break;
+                }
+                case TCS_COMM_2_MESSAGE_ACK:
+                {
+                    PACKET_HANDLER.Handler_TCS_COMM_2_MESSAGE_ACK(inPacket);
+                    break;
+                }
+                case TCS_COMM_3_MESSAGE_ACK:
+                {
+                    PACKET_HANDLER.Handler_TCS_COMM_3_MESSAGE_ACK(inPacket);
                     break;
                 }
                 default:

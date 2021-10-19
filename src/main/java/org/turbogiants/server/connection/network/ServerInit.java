@@ -1,5 +1,6 @@
 package org.turbogiants.server.connection.network;
 
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -25,12 +26,36 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Server Initializer Class
+ * @author https://github.com/Raitou
+ * Desc: This class handle's server initialization which binds to a network socket
+ * @version 1.2
+ * @since 1.0
+ */
 public class ServerInit implements Runnable {
 
+    /**
+     * Date: --.--.--
+     * Desc: Get the singleton instance of log4j
+     * @since 1.0
+     */
     private static final Logger LOGGER = LogManager.getRootLogger();
-    public static Map<String, Channel> channelPool = new HashMap<>();
+
+    private static final PacketHandler PACKET_HANDLER = PacketHandler.getInstance();
+
+    /**
+     * Date: --.--.--
+     * Desc: Check whether EPOLL is available especially in Linux Systems
+     * @since 1.0
+     */
     public static final boolean isEPOLL = Epoll.isAvailable();
 
+    /**
+     * Date: --.--.--
+     * Desc: Standard Initialization of NettyIO TCP Socket
+     * see more at NettyIO documentation
+     */
     @Override
     public void run() {
 
@@ -43,10 +68,16 @@ public class ServerInit implements Runnable {
             b.channel(NioServerSocketChannel.class);
             b.childHandler(new ChannelInitializer<SocketChannel>() {
 
-                @Override
+                /**
+                 * Packet Encoder - This encodes the packet before sending to the socket.
+                 * Packet Decoder - This decodes the packet before receiving to the channel handler.
+                 * Channel Handler - This process information for both receiving and sending.
+                 * @since 1.1
+                 */
+                 @Override
                 protected void initChannel(SocketChannel socketChannel) {
-                    socketChannel.pipeline().addLast(new IdleStateHandler(30, 30, 30), new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
-                    //socketChannel.pipeline().addLast(new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
+
+                    socketChannel.pipeline().addLast(new IdleStateHandler(0, 0, 180), new PacketDecoder(), new PacketEncoder(), new ChannelHandler());
 
                     try {
                         byte[] serverIV = AESCrypto.generateIV();
@@ -54,12 +85,10 @@ public class ServerInit implements Runnable {
 
                         NettyUser user = new NettyUser(socketChannel, serverIV, clientIV);
 
-                        channelPool.put(user.getIP(), socketChannel);
                         socketChannel.attr(NettyUser.CLIENT_KEY).set(user);
                         socketChannel.attr(NettyUser.CRYPTO_KEY).set(new AESCrypto());
 
-                        //starts a handshake
-                        user.write(PacketHandler.Handler_TCS_HANDSHAKE_NOT());
+                        user.write(PACKET_HANDLER.Handler_TCS_HANDSHAKE_NOT());
 
                     } catch (GeneralSecurityException e) {
                         LOGGER.error(Arrays.toString(e.getStackTrace()));
@@ -70,6 +99,7 @@ public class ServerInit implements Runnable {
 
             b.childOption(ChannelOption.TCP_NODELAY, true);
             b.childOption(ChannelOption.SO_KEEPALIVE, true);
+            b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 
             ChannelFuture f = b.bind(Config.getSocketIp(), Config.getSocketPort()).sync();
             f.channel().closeFuture().sync();

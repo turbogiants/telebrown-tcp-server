@@ -1,9 +1,8 @@
 package org.turbogiants.client.connection.network;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.channel.*;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -29,6 +28,8 @@ public class ClientInit implements Runnable {
         try {
             Bootstrap b = new Bootstrap();
             b.group(workerGroup);
+            b.option(ChannelOption.TCP_NODELAY, true);
+            b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
             b.channel(NioSocketChannel.class);
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override

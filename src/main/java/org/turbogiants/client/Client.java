@@ -3,6 +3,7 @@ package org.turbogiants.client;
 import org.turbogiants.client.cli.CommandListener;
 import org.turbogiants.client.connection.network.ClientInit;
 import org.turbogiants.common.crypto.AESCrypto;
+import org.turbogiants.common.handler.EventHandler;
 import org.turbogiants.common.utility.Config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,24 +37,29 @@ public class Client {
 
     }
 
+    private void connect(Thread thread){
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        EventHandler.addEvent(this::reconnect, 10000);
+    }
+
+    private void reconnect(){
+        logger.info("Client attempting to reconnect at " + Config.getSocketIp() + ":" + Config.getSocketPort());
+        connect(new Thread(new ClientInit()));
+    }
+
     private void init(String[] args) {
         logger.info("Browny Test Client [Start]");
         long startNow = System.currentTimeMillis();
         Config.init(false);
         logger.info("Configuration loaded in " + (System.currentTimeMillis() - startNow) + "ms");
-        Thread clientInit = new Thread(new ClientInit());
-        clientInit.start();
         logger.info("Client attempting connection to " + Config.getSocketIp() + ":" + Config.getSocketPort() + " in " + (System.currentTimeMillis() - startNow) + "ms");
         logger.info(String.format("Finished loading test client in %dms", System.currentTimeMillis() - startNow));
         new Thread(new CommandListener()).start();
-
-        try {
-            clientInit.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-        System.exit(0);
+        connect(new Thread(new ClientInit()));
     }
 }
