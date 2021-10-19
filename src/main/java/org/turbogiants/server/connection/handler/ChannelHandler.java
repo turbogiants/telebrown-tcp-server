@@ -124,6 +124,11 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                     oPacket = PACKET_HANDLER.Handler_TCS_COMM_MESSAGE_2_REQ(user, inPacket);
                     break;
                 }
+                case TCS_COMM_3_MESSAGE_REQ:
+                {
+                    oPacket = PACKET_HANDLER.Handler_TCS_COMM_3_MESSAGE_REQ(inPacket);
+                    break;
+                }
                 default:
                     LOGGER.error("Invalid Packet ID : " + opcode + " - Client(" + ctx.channel().remoteAddress().toString().split(":")[0].substring(1) + ")");
                     user.close();

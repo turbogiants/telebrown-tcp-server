@@ -31,7 +31,7 @@ public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
         byte[] data = outPacket.getData();
         try {
             //LOGGER.info("Encode: " + Arrays.toString(data));
-            data = aesCrypto.encrypt(data, iv);
+            //data = aesCrypto.encrypt(data, iv);
 
             //only for test client
             if (outPacket.getHeader() == 11){
@@ -42,8 +42,8 @@ public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
             }
             byteBuf.writeInt(data.length);
             byteBuf.writeBytes(data);
-        } catch (GeneralSecurityException e) {
-            LOGGER.error(Arrays.toString(e.getStackTrace()));
+        //} catch (GeneralSecurityException e) {
+       //    LOGGER.error(Arrays.toString(e.getStackTrace()));
         } finally {
 //            //not the best sln find another.
 //            long startNow = System.currentTimeMillis();

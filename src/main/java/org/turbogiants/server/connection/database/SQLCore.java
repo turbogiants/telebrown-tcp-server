@@ -31,7 +31,7 @@ public class SQLCore extends SQLDriver{
     }
 
     public boolean updateMessageStatus(MessageInfo messageInfo){
-        String statement = String.format("UPDATE messagehistory SET STATUS = 0 WHERE senderID = %d AND recipientID = %d message = \"%s\" AND TIMESTAMP = %d",
+        String statement = String.format("UPDATE messagehistory SET STATUS = 0 WHERE senderID = %d AND recipientID = %d AND message = \"%s\" AND TIMESTAMP = %d",
                 messageInfo.getOwnerID(),
                 messageInfo.getDestID(),
                 messageInfo.getMessage(),

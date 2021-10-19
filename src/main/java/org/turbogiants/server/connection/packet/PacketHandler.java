@@ -34,9 +34,25 @@ public class PacketHandler {
         return instance;
     }
 
+    public OutPacket Handler_TCS_COMM_3_MESSAGE_REQ(InPacket inPacket){
+        TCS_COMM_3_MESSAGE_REQ tcsComm3MessageReq = new TCS_COMM_3_MESSAGE_REQ();
+        tcsComm3MessageReq.deserialize(inPacket);
+        return Handler_TCS_COMM_3_MESSAGE_ACK(tcsComm3MessageReq.getMessageInfo());
+    }
+
+    public OutPacket Handler_TCS_COMM_3_MESSAGE_ACK(MessageInfo messageInfo){
+        TCS_COMM_3_MESSAGE_ACK tcsComm3MessageAck = new TCS_COMM_3_MESSAGE_ACK();
+        if(SQL_CORE.updateMessageStatus(messageInfo)){
+            tcsComm3MessageAck.setOK(TCS_COMM_3_MESSAGE_ACK.Status.MESSAGE_RECEIVED_SUCCESS);
+        } else {
+            tcsComm3MessageAck.setOK(TCS_COMM_3_MESSAGE_ACK.Status.MESSAGE_RECEIVED_FAILED);
+        }
+        return tcsComm3MessageAck.serialize(PacketEnum.TCS_COMM_3_MESSAGE_ACK);
+    }
+
     public OutPacket Handler_TCS_COMM_2_MESSAGE_ACK(){
         TCS_COMM_2_MESSAGE_ACK tcsComm2MessageAck = new TCS_COMM_2_MESSAGE_ACK();
-        tcsComm2MessageAck.setiOK(TCS_COMM_2_MESSAGE_ACK.Status.MESSAGE_RECEIVED_SUCCESS);
+        tcsComm2MessageAck.setOK(TCS_COMM_2_MESSAGE_ACK.Status.MESSAGE_RECEIVED_SUCCESS);
         return tcsComm2MessageAck.serialize(PacketEnum.TCS_COMM_2_MESSAGE_ACK);
     }
 
@@ -84,9 +100,12 @@ public class PacketHandler {
     public OutPacket Handler_TCS_COMM_MESSAGE_ACK(MessageInfo messageInfo){
         TCS_COMM_MESSAGE_ACK tcsCommMessageAck = new TCS_COMM_MESSAGE_ACK();
         if(SQL_CORE.addMessage(messageInfo)){
-            tcsCommMessageAck.setiOK(TCS_COMM_MESSAGE_ACK.Status.MESSAGE_SENT_SUCCESS);
+            tcsCommMessageAck.setOK(TCS_COMM_MESSAGE_ACK.Status.MESSAGE_SENT_SUCCESS);
+            NettyUser destUser = NettyUser.getUserByID(messageInfo.getDestID());
+            if(destUser != null)
+                destUser.write(Handler_TCS_COMM_MESSAGE_NOT(messageInfo));
         } else {
-            tcsCommMessageAck.setiOK(TCS_COMM_MESSAGE_ACK.Status.MESSAGE_SENT_FAILED);
+            tcsCommMessageAck.setOK(TCS_COMM_MESSAGE_ACK.Status.MESSAGE_SENT_FAILED);
         }
         return tcsCommMessageAck.serialize(PacketEnum.TCS_COMM_MESSAGE_ACK);
     }

@@ -33,11 +33,11 @@ public class TCS_COMM_2_MESSAGE_ACK {
 
     private int iOK;
 
-    public void setiOK(Status op){
+    public void setOK(Status op){
         iOK = op.getStatusID();
     }
 
-    public int getiOK(){
+    public int getOK(){
         return iOK;
     }
 

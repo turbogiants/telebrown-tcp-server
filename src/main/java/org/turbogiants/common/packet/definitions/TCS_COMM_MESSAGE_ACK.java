@@ -4,8 +4,6 @@ import org.turbogiants.common.packet.InPacket;
 import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
 
-import java.lang.*;
-
 
 public class TCS_COMM_MESSAGE_ACK {
 
@@ -36,11 +34,11 @@ public class TCS_COMM_MESSAGE_ACK {
 
     private int iOK;
 
-    public void setiOK(Status op){
+    public void setOK(Status op){
         iOK = op.getStatusID();
     }
 
-    public int getiOK(){
+    public int getOK(){
         return iOK;
     }
 

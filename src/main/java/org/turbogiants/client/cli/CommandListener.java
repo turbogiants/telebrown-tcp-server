@@ -8,6 +8,13 @@ import static org.turbogiants.client.connection.network.ClientInit.socketChannel
 
 public class CommandListener implements Runnable {
 
+    /**
+     * Date: --.--.--
+     * Desc: Get the singleton instance of PacketHandler
+     * @since 1.4
+     */
+    private static final PacketHandler PACKET_HANDLER = PacketHandler.getInstance();
+
     private static final String[] strCommandList = {
             "setID",
             "exit",
@@ -53,23 +60,23 @@ public class CommandListener implements Runnable {
     }
 
     private void setID(int iID) {
-        socketChannel.writeAndFlush(PacketHandler.Handler_TCS_USER_SET_ID_REQ(iID));
+        socketChannel.writeAndFlush(PACKET_HANDLER.Handler_TCS_USER_SET_ID_REQ(iID));
     }
 
     private void olCheck(int id) {
-        socketChannel.writeAndFlush(PacketHandler.Handler_TCS_USER_IS_ONLINE_REQ(id));
+        socketChannel.writeAndFlush(PACKET_HANDLER.Handler_TCS_USER_IS_ONLINE_REQ(id));
     }
 
     private void send(int id, String message) {
-        socketChannel.writeAndFlush(PacketHandler.Handler_TCS_COMM_MESSAGE_REQ(id, message));
+        socketChannel.writeAndFlush(PACKET_HANDLER.Handler_TCS_COMM_MESSAGE_REQ(id, message));
     }
 
     private void spam() {
-        socketChannel.writeAndFlush(PacketHandler.Handler_TCS_SPAM_WARNING_NOT(true));
+        socketChannel.writeAndFlush(PACKET_HANDLER.Handler_TCS_SPAM_WARNING_NOT(true));
     }
 
     private void receive(){
-        socketChannel.writeAndFlush(PacketHandler.Handler_TCS_COMM_2_MESSAGE_REQ());
+        socketChannel.writeAndFlush(PACKET_HANDLER.Handler_TCS_COMM_2_MESSAGE_REQ());
     }
 
 }
