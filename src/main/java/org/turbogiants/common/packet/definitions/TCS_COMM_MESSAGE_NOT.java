@@ -6,7 +6,7 @@ import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
 
 public class TCS_COMM_MESSAGE_NOT {
-    private MessageInfo messageInfo;
+    protected MessageInfo messageInfo;
 
     public void setMessageInfo(MessageInfo messageInfo){
         this.messageInfo = messageInfo;
