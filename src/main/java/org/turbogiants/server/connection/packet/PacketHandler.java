@@ -71,8 +71,8 @@ public class PacketHandler {
     public OutPacket Handler_TCS_USER_IS_ONLINE_REQ(NettyUser nettyUser, InPacket inPacket){
         TCS_USER_IS_ONLINE_REQ tcsUserIsOnlineReq = new TCS_USER_IS_ONLINE_REQ();
         tcsUserIsOnlineReq.deserialize(inPacket);
-        int uid = tcsUserIsOnlineReq.getUserID();
-        if(uid <= 0){
+        String uid = tcsUserIsOnlineReq.getUserID();
+        if(uid.length() != 16){
             LOGGER.error("Client(" + nettyUser.getIP() + ") finding id " + uid);
             return null;
         }
@@ -121,8 +121,8 @@ public class PacketHandler {
     public OutPacket Handler_TCS_USER_SET_ID_REQ(NettyUser nettyUser, InPacket inPacket) {
         TCS_USER_SET_ID_REQ userSetIdReq = new TCS_USER_SET_ID_REQ();
         userSetIdReq.deserialize(inPacket);
-        int uid = userSetIdReq.getUserID();
-        if(uid <= 0){
+        String uid = userSetIdReq.getUserID();
+        if(uid.length() != 16){
             LOGGER.error("Client(" + nettyUser.getIP() + ") SetID to " + uid);
             return null;
         }
@@ -141,7 +141,7 @@ public class PacketHandler {
 
     public OutPacket Handler_USER_SET_ID_ACK(TCS_USER_SET_ID_REQ tcsUserSetIdReq, NettyUser nettyUser){
         TCS_USER_SET_ID_ACK tcsUserSetIdAck = new TCS_USER_SET_ID_ACK();
-        int uid = tcsUserSetIdReq.getUserID();
+        String uid = tcsUserSetIdReq.getUserID();
         tcsUserSetIdAck.setiOK(TCS_USER_SET_ID_ACK.Status.SET_ID_SUCCESS);
 
         UserDef userDef = new UserDef();

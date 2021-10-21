@@ -42,16 +42,16 @@ public class CommandListener implements Runnable {
                 }
 
                 if ("setID".equals(strCommand)) {
-                    setID(Integer.parseInt(commands[1]));
+                    setID(commands[1]);
                 } else if ("send".equals(strCommand)) {
                     if(commands.length >= 3)
-                        send(Integer.parseInt(commands[1]), commands[2]);
+                        send(commands[1], commands[2]);
                 } else if ("spam".equals(strCommand)) {
                     spam();
                 } else if ("receive".equals(strCommand)) {
                     receive();
                 } else if ("olchk".equals(strCommand)) {
-                    olCheck(Integer.parseInt(commands[1]));
+                    olCheck(commands[1]);
                 }
             }
 
@@ -59,15 +59,15 @@ public class CommandListener implements Runnable {
 
     }
 
-    private void setID(int iID) {
+    private void setID(String iID) {
         socketChannel.writeAndFlush(PACKET_HANDLER.Handler_TCS_USER_SET_ID_REQ(iID));
     }
 
-    private void olCheck(int id) {
+    private void olCheck(String id) {
         socketChannel.writeAndFlush(PACKET_HANDLER.Handler_TCS_USER_IS_ONLINE_REQ(id));
     }
 
-    private void send(int id, String message) {
+    private void send(String id, String message) {
         socketChannel.writeAndFlush(PACKET_HANDLER.Handler_TCS_COMM_MESSAGE_REQ(id, message));
     }
 

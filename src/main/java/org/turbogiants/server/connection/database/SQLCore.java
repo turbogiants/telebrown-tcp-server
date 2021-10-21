@@ -20,7 +20,7 @@ public class SQLCore extends SQLDriver{
     }
 
     public boolean addMessage(MessageInfo messageInfo){
-        String statement = String.format("INSERT INTO messagehistory(senderID, recipientID, message, TIMESTAMP) VALUES(%d, %d, \"%s\", %d)",
+        String statement = String.format("INSERT INTO messagehistory(senderID, recipientID, message, TIMESTAMP) VALUES(\"%s\", \"%s\", \"%s\", %d)",
                 messageInfo.getOwnerID(),
                 messageInfo.getDestID(),
                 messageInfo.getMessage(),
@@ -31,7 +31,7 @@ public class SQLCore extends SQLDriver{
     }
 
     public boolean updateMessageStatus(MessageInfo messageInfo){
-        String statement = String.format("UPDATE messagehistory SET STATUS = 0 WHERE senderID = %d AND recipientID = %d AND message = \"%s\" AND TIMESTAMP = %d",
+        String statement = String.format("UPDATE messagehistory SET STATUS = 0 WHERE senderID = \"%s\" AND recipientID = \"%s\" AND message = \"%s\" AND TIMESTAMP = %d",
                 messageInfo.getOwnerID(),
                 messageInfo.getDestID(),
                 messageInfo.getMessage(),
@@ -41,8 +41,8 @@ public class SQLCore extends SQLDriver{
         return query(statement, affectedRows);
     }
 
-    public ArrayList<MessageInfo> getMessage(int iReceiverID){
-        String statement = String.format("SELECT * FROM messagehistory WHERE recipientID = %d and STATUS = -1", iReceiverID);
+    public ArrayList<MessageInfo> getMessage(String strReceiverID){
+        String statement = String.format("SELECT * FROM messagehistory WHERE recipientID = \"%s\" and STATUS = -1", strReceiverID);
         ResultSet resultSet = null;
         try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
             PreparedStatement query = con.prepareStatement(statement);
@@ -51,8 +51,8 @@ public class SQLCore extends SQLDriver{
             ArrayList<MessageInfo> messageInfos = new ArrayList<>();
             while (resultSet.next()) {
                 MessageInfo messageInfo = new MessageInfo();
-                messageInfo.setOwnerID(resultSet.getInt("senderID"));
-                messageInfo.setDestID(resultSet.getInt("recipientID"));
+                messageInfo.setOwnerID(resultSet.getString("senderID"));
+                messageInfo.setDestID(resultSet.getString("recipientID"));
                 messageInfo.setMessage(resultSet.getString("message"));
                 messageInfo.setUnixTime(resultSet.getLong("TIMESTAMP"));
                 messageInfos.add(messageInfo);

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Oct 19, 2021 at 08:17 AM
+-- Generation Time: Oct 21, 2021 at 01:57 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -32,8 +32,8 @@ USE `telebrown`;
 DROP TABLE IF EXISTS `messagehistory`;
 CREATE TABLE IF NOT EXISTS `messagehistory` (
   `messageID` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `senderID` bigint(20) UNSIGNED NOT NULL,
-  `recipientID` bigint(20) UNSIGNED NOT NULL,
+  `senderID` varchar(64) NOT NULL,
+  `recipientID` varchar(64) NOT NULL,
   `message` varchar(1200) NOT NULL,
   `TIMESTAMP` bigint(20) NOT NULL,
   `STATUS` smallint(6) NOT NULL DEFAULT '-1',

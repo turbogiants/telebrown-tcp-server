@@ -2,24 +2,24 @@ package org.turbogiants.common;
 
 public class MessageInfo {
     private String strMessage;
-    private int iDestID;
-    private int iOwnerID;
+    private String iDestID;
+    private String iOwnerID;
 
     private long lUnixTime;
 
-    public void setDestID(int iID) {
+    public void setDestID(String iID) {
         this.iDestID = iID;
     }
 
-    public int getDestID() {
+    public String getDestID() {
         return iDestID;
     }
 
-    public void setOwnerID(int iID) {
+    public void setOwnerID(String iID) {
         this.iOwnerID = iID;
     }
 
-    public int getOwnerID() {
+    public String getOwnerID() {
         return iOwnerID;
     }
 
