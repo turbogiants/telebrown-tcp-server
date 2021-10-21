@@ -5,27 +5,27 @@ import org.turbogiants.common.packet.OutPacket;
 import org.turbogiants.common.packet.PacketEnum;
 
 public class TCS_USER_IS_ONLINE_REQ {
-    private int userID;
+    private String userID;
 
     public TCS_USER_IS_ONLINE_REQ(){
-        userID = 0;
+        userID = "0XDEADC0DE";
     }
 
-    public void setUserID(int id){
+    public void setUserID(String id){
         userID = id;
     }
 
-    public int getUserID(){
+    public String getUserID(){
         return userID;
     }
 
     public OutPacket serialize(PacketEnum header){
         OutPacket outPacket = new OutPacket(header);
-        outPacket.encodeInt(userID);
+        outPacket.encodeString(userID);
         return outPacket;
     }
 
     public void deserialize(InPacket inPacket){
-        this.userID = inPacket.decodeInt();
+        this.userID = inPacket.decodeString();
     }
 }

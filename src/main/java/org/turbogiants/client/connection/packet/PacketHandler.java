@@ -15,7 +15,7 @@ import static org.turbogiants.client.connection.network.ClientInit.socketChannel
 public class PacketHandler {
 
     //test var
-    private static final int iAccountID = 1300;
+    private static final String iAccountID = "E7A5B9029A133FD7";
 
 
     private static final Logger LOGGER = LogManager.getRootLogger();
@@ -65,7 +65,7 @@ public class PacketHandler {
     }
 
 
-    public OutPacket Handler_TCS_USER_IS_ONLINE_REQ(int id){
+    public OutPacket Handler_TCS_USER_IS_ONLINE_REQ(String id){
         TCS_USER_IS_ONLINE_REQ tcsUserIsOnlineReq = new TCS_USER_IS_ONLINE_REQ();
         tcsUserIsOnlineReq.setUserID(id);
         return tcsUserIsOnlineReq.serialize(PacketEnum.TCS_USER_IS_ONLINE_REQ);
@@ -81,7 +81,7 @@ public class PacketHandler {
             LOGGER.info("Client Offline");
     }
 
-    public OutPacket Handler_TCS_COMM_MESSAGE_REQ(int destID, String message) {
+    public OutPacket Handler_TCS_COMM_MESSAGE_REQ(String destID, String message) {
         TCS_COMM_MESSAGE_REQ tcsCommMessageReq = new TCS_COMM_MESSAGE_REQ();
         MessageInfo messageInfo = new MessageInfo();
         messageInfo.setDestID(destID);
@@ -107,15 +107,15 @@ public class PacketHandler {
         TCS_COMM_MESSAGE_NOT tcsCommMessageNot = new TCS_COMM_MESSAGE_NOT();
         tcsCommMessageNot.deserialize(inPacket);
         MessageInfo messageInfo = tcsCommMessageNot.getMessageInfo();
-        int iOwnerID = messageInfo.getOwnerID();
+        String strOwnerID = messageInfo.getOwnerID();
         long lUnixTime = messageInfo.getUnixTime();
         String strMessage = messageInfo.getMessage();
         Date date = new Date(lUnixTime);
-        LOGGER.info("Message from (" + date.toString() + ")" + iOwnerID + " : " + strMessage);
+        LOGGER.info("Message from (" + date.toString() + ")" + strOwnerID + " : " + strMessage);
         return Handler_TCS_COMM_3_MESSAGE_REQ(messageInfo);
     }
 
-    public OutPacket Handler_TCS_USER_SET_ID_REQ(int iID) {
+    public OutPacket Handler_TCS_USER_SET_ID_REQ(String iID) {
         TCS_USER_SET_ID_REQ userSetIdReq = new TCS_USER_SET_ID_REQ();
         userSetIdReq.setUserID(iID);
         return userSetIdReq.serialize(PacketEnum.TCS_USER_SET_ID_REQ);

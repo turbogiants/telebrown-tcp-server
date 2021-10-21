@@ -4,10 +4,7 @@ public class UserDef {
 
     public static final int SPAM_THRESHOLD = 5;
 
-
-    // for testing purposes we will be using integer
-    // todo: support 16 byte long id
-    private int UID = 0;
+    private String UID = "0XDEADC0DE";
 
     private int spamCount = 0;
 
@@ -29,11 +26,11 @@ public class UserDef {
         }
     }
 
-    public void setUID(int uid){
+    public void setUID(String uid){
         this.UID = uid;
     }
 
-    public int getUID(){
+    public String getUID(){
         return UID;
     }
 

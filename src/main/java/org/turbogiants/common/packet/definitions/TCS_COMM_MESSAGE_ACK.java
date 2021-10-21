@@ -47,8 +47,8 @@ public class TCS_COMM_MESSAGE_ACK extends TCS_COMM_MESSAGE_NOT{
     public OutPacket serialize(PacketEnum header){
         OutPacket outPacket = new OutPacket(header);
         outPacket.encodeInt(iOK);
-        outPacket.encodeInt(messageInfo.getDestID());
-        outPacket.encodeInt(messageInfo.getOwnerID());
+        outPacket.encodeString(messageInfo.getDestID());
+        outPacket.encodeString(messageInfo.getOwnerID());
         outPacket.encodeLong(messageInfo.getUnixTime());
         outPacket.encodeString(messageInfo.getMessage());
         return outPacket;
@@ -58,8 +58,8 @@ public class TCS_COMM_MESSAGE_ACK extends TCS_COMM_MESSAGE_NOT{
     public void deserialize(InPacket inPacket){
         iOK = inPacket.decodeInt();
         MessageInfo messageInfo = new MessageInfo();
-        messageInfo.setDestID(inPacket.decodeInt());
-        messageInfo.setOwnerID(inPacket.decodeInt());
+        messageInfo.setDestID(inPacket.decodeString());
+        messageInfo.setOwnerID(inPacket.decodeString());
         messageInfo.setUnixTime(inPacket.decodeLong());
         messageInfo.setMessage(inPacket.decodeString());
         this.messageInfo = messageInfo;

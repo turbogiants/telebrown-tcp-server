@@ -10,6 +10,7 @@ import org.turbogiants.common.packet.Packet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -53,14 +54,14 @@ public class NettyUser {
      */
     public static ArrayList<NettyUser> userPool = new ArrayList<>();
 
-    public static boolean isUserIDExists(int id){
+    public static boolean isUserIDExists(String id){
         boolean isExists = false;
         for (NettyUser nettyUser : userPool) {
             if (nettyUser.getUserDef() == null)
                 continue;
-            if (nettyUser.getUserDef().getUID() == 0)
+            if (Objects.equals(nettyUser.getUserDef().getUID(), "0XDEADC0DE"))
                 continue;
-            if (nettyUser.getUserDef().getUID() == id) {
+            if (Objects.equals(nettyUser.getUserDef().getUID(), id)) {
                 isExists = true;
                 break;
             }
@@ -75,21 +76,21 @@ public class NettyUser {
      * @param id: The Client's ID
      * @return NettyUser:
      */
-    public static NettyUser getUserByID(int id){
+    public static NettyUser getUserByID(String id){
         for (NettyUser nettyUser : userPool) {
             if (nettyUser.getUserDef() == null)
                 continue;
-            if (nettyUser.getUserDef().getUID() == 0)
+            if (Objects.equals(nettyUser.getUserDef().getUID(), "0XDEADC0DE"))
                 continue;
-            if (nettyUser.getUserDef().getUID() == id) {
+            if (Objects.equals(nettyUser.getUserDef().getUID(), id)) {
                 return nettyUser;
             }
         }
         return null;
     }
 
-    public static boolean closeByUserID(int id){
-        return userPool.removeIf(nettyUser -> nettyUser.getUserDef().getUID() == id);
+    public static boolean closeByUserID(String id){
+        return userPool.removeIf(nettyUser -> Objects.equals(nettyUser.getUserDef().getUID(), id));
     }
 
 
