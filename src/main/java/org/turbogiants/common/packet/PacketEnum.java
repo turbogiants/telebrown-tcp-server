@@ -58,7 +58,7 @@ public enum PacketEnum {
     /**
      * Communication Message Notify - this packet header notifies the user as of @version 1.4 this is now in need of
      * manual request to get a message as they now are all stored via the MySQL database. This will be reliable esp for
-     * users that has network connectivity issues.
+     * users that has network connectivity issues. As of @version 1.5 this is now called automatically again.
      */
     TCS_COMM_MESSAGE_NOT(8),
 

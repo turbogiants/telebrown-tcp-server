@@ -100,15 +100,22 @@ public class PacketHandler {
     public OutPacket Handler_TCS_COMM_MESSAGE_ACK(MessageInfo messageInfo){
         TCS_COMM_MESSAGE_ACK tcsCommMessageAck = new TCS_COMM_MESSAGE_ACK();
         messageInfo.setUnixTime(System.currentTimeMillis()); // change time checking from client to server to make it more accurate
-        if(SQL_CORE.addMessage(messageInfo)){
-            tcsCommMessageAck.setOK(TCS_COMM_MESSAGE_ACK.Status.MESSAGE_SENT_SUCCESS);
-            tcsCommMessageAck.setMessageInfo(messageInfo); // return the message sent back to the sender to get the right time
-            NettyUser destUser = NettyUser.getUserByID(messageInfo.getDestID());
-            if(destUser != null)
-                destUser.write(Handler_TCS_COMM_MESSAGE_NOT(messageInfo));
-        } else {
+        if(messageInfo.getDestID().length() != 16 ||
+                messageInfo.getOwnerID().length() != 16 ||
+                messageInfo.getMessage().isEmpty()){
             tcsCommMessageAck.setOK(TCS_COMM_MESSAGE_ACK.Status.MESSAGE_SENT_FAILED);
+        } else {
+            if(SQL_CORE.addMessage(messageInfo)){
+                tcsCommMessageAck.setOK(TCS_COMM_MESSAGE_ACK.Status.MESSAGE_SENT_SUCCESS);
+                tcsCommMessageAck.setMessageInfo(messageInfo); // return the message sent back to the sender to get the right time
+                NettyUser destUser = NettyUser.getUserByID(messageInfo.getDestID());
+                if(destUser != null)
+                    destUser.write(Handler_TCS_COMM_MESSAGE_NOT(messageInfo));
+            } else {
+                tcsCommMessageAck.setOK(TCS_COMM_MESSAGE_ACK.Status.MESSAGE_SENT_FAILED);
+            }
         }
+
         return tcsCommMessageAck.serialize(PacketEnum.TCS_COMM_MESSAGE_ACK);
     }
 
