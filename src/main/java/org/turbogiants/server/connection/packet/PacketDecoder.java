@@ -34,12 +34,14 @@ public class PacketDecoder extends ByteToMessageDecoder {
         NettyUser nettyUser = channelHandlerContext.channel().attr(NettyUser.CLIENT_KEY).get();
         AESCrypto aesCrypto = channelHandlerContext.channel().attr(NettyUser.CRYPTO_KEY).get();
         if (nettyUser != null) {
-            boolean isSpam = false;
-            byte[] clientIV = new byte[16];
-            if (nettyUser.getStoredLength() == -1) {
-                if (in.readableBytes() >= 16) {
-                    in.readBytes(clientIV);
-                    int length = in.readInt();
+            try{
+                nettyUser.acquireDecoderState();
+                boolean isSpam = false;
+                byte[] clientIV = new byte[16];
+                if (nettyUser.getStoredLength() == -1) {
+                    if (in.readableBytes() >= 16) {
+                        in.readBytes(clientIV);
+                        int length = in.readInt();
 //                    if (nettyUser.checkClientIV(clientIV)) {
 //                        isSpam = true;
 //                        nettyUser.getUserDef().addSpamCnt();
@@ -53,30 +55,30 @@ public class PacketDecoder extends ByteToMessageDecoder {
 //                            return;
 //                        }
 //                    }
-                    nettyUser.setStoredLength(length);
-                } else {
-                    return;
+                        nettyUser.setStoredLength(length);
+                    } else {
+                        return;
+                    }
                 }
-            }
-            if (in.readableBytes() >= nettyUser.getStoredLength()) {
-                byte[] data = new byte[nettyUser.getStoredLength()];
-                in.readBytes(data);
-                nettyUser.setStoredLength(-1);
+                if (in.readableBytes() >= nettyUser.getStoredLength()) {
+                    byte[] data = new byte[nettyUser.getStoredLength()];
+                    in.readBytes(data);
+                    nettyUser.setStoredLength(-1);
 
-                if (isSpam) {
+                    if (isSpam) {
 //                    try {
 //                        data = aesCrypto.decrypt(data, new IvParameterSpec(clientIV));
 //                    } catch (GeneralSecurityException e) {
 //                        LOGGER.error(Arrays.toString(e.getStackTrace()));
 //                    }
-                    byte[] dataSpam = new byte[]{
-                        0x0B, 0x00 //Spam Packet ID
-                    };
-                    InPacket inPacket = new InPacket(data);
-                    out.add(inPacket);
-                    InPacket inPacketSpam = new InPacket(dataSpam);
-                    out.add(inPacketSpam);
-                } else {
+                        byte[] dataSpam = new byte[]{
+                                0x0B, 0x00 //Spam Packet ID
+                        };
+                        InPacket inPacket = new InPacket(data);
+                        out.add(inPacket);
+                        InPacket inPacketSpam = new InPacket(dataSpam);
+                        out.add(inPacketSpam);
+                    } else {
 //                    try {
 //                        LOGGER.info("Decoder (Before Decryption): " + new String(data));
 //                        data = aesCrypto.decrypt(data, new IvParameterSpec(nettyUser.getClientIV()));
@@ -84,12 +86,16 @@ public class PacketDecoder extends ByteToMessageDecoder {
 //                    } catch (GeneralSecurityException e) {
 //                        LOGGER.error(Arrays.toString(e.getStackTrace()));
 //                    }
-                    if(nettyUser.getUserDef() != null)
-                        nettyUser.getUserDef().reduceSpamCnt();
-                    InPacket inPacket = new InPacket(data);
-                    out.add(inPacket);
+                        if(nettyUser.getUserDef() != null)
+                            nettyUser.getUserDef().reduceSpamCnt();
+                        InPacket inPacket = new InPacket(data);
+                        out.add(inPacket);
+                    }
                 }
+            } finally {
+                nettyUser.releaseDecoderState();
             }
+
         }
     }
 }

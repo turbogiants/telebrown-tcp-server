@@ -40,7 +40,8 @@ public class NettyUser {
     public static final AttributeKey<NettyUser> CLIENT_KEY = AttributeKey.valueOf("C");
 
     protected final Channel ch;
-    private final ReentrantLock lock;
+    private final ReentrantLock encoder_lock;
+    private final ReentrantLock decoder_lock;
     private final InPacket inPacket;
     private byte[] serverIV;
     private byte[] clientIV;
@@ -104,7 +105,8 @@ public class NettyUser {
 
     private NettyUser() {
         ch = null;
-        lock = null;
+        encoder_lock = null;
+        decoder_lock = null;
         inPacket = null;
     }
 
@@ -113,7 +115,8 @@ public class NettyUser {
         this.serverIV = serverIV;
         this.clientIV = clientIV;
         this.inPacket = new InPacket();
-        lock = new ReentrantLock(true); // note: lock is fair to ensure logical sequence is maintained server-side
+        encoder_lock = new ReentrantLock(true); // note: lock is fair to ensure logical sequence is maintained server-side
+        decoder_lock = new ReentrantLock(true); // note: lock is fair to ensure logical sequence is maintained server-side
         userPool.add(this);
     }
 
@@ -176,12 +179,22 @@ public class NettyUser {
     }
 
     public final void acquireEncoderState() {
-        if(lock != null)
-            lock.lock();
+        if(encoder_lock != null)
+            encoder_lock.lock();
     }
 
     public final void releaseEncodeState() {
-        if(lock != null)
-            lock.unlock();
+        if(encoder_lock != null)
+            encoder_lock.unlock();
+    }
+
+    public final void acquireDecoderState() {
+        if(decoder_lock != null)
+            decoder_lock.lock();
+    }
+
+    public final void releaseDecoderState() {
+        if(decoder_lock != null)
+            decoder_lock.unlock();
     }
 }
