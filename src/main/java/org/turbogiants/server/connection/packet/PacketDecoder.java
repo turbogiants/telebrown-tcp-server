@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.turbogiants.common.crypto.AESCrypto;
 import org.turbogiants.common.packet.InPacket;
+import org.turbogiants.common.packet.Packet;
 import org.turbogiants.server.user.NettyUser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,19 +43,19 @@ public class PacketDecoder extends ByteToMessageDecoder {
                     if (in.readableBytes() >= 16) {
                         in.readBytes(clientIV);
                         int length = in.readInt();
-//                    if (nettyUser.checkClientIV(clientIV)) {
-//                        isSpam = true;
-//                        nettyUser.getUserDef().addSpamCnt();
-//                        LOGGER.warn(String.format("[PacketDecoder] | Incorrect IV! Warning Client %s (%d/%d).",
-//                                nettyUser.getIP(),
-//                                nettyUser.getUserDef().getSpamCnt(),
-//                                UserDef.SPAM_THRESHOLD));
-//                        if(nettyUser.getUserDef().isSpamThresholdMet()) {
-//                            LOGGER.error(String.format("[PacketDecoder] | Incorrect IV! Dropping client %s.", nettyUser.getIP()));
-//                            nettyUser.close();
-//                            return;
-//                        }
-//                    }
+                    if (nettyUser.checkClientIV(clientIV)) {
+                        isSpam = true;
+                        nettyUser.getUserDef().addSpamCnt();
+                        LOGGER.warn(String.format("[PacketDecoder] | Incorrect IV! Warning Client %s (%d/%d).",
+                                nettyUser.getIP(),
+                                nettyUser.getUserDef().getSpamCnt(),
+                                UserDef.SPAM_THRESHOLD));
+                        if(nettyUser.getUserDef().isSpamThresholdMet()) {
+                            LOGGER.error(String.format("[PacketDecoder] | Incorrect IV! Dropping client %s.", nettyUser.getIP()));
+                            nettyUser.close();
+                            return;
+                        }
+                    }
                         nettyUser.setStoredLength(length);
                     } else {
                         return;
@@ -66,29 +67,30 @@ public class PacketDecoder extends ByteToMessageDecoder {
                     nettyUser.setStoredLength(-1);
 
                     if (isSpam) {
-//                    try {
-//                        data = aesCrypto.decrypt(data, new IvParameterSpec(clientIV));
-//                    } catch (GeneralSecurityException e) {
-//                        LOGGER.error(Arrays.toString(e.getStackTrace()));
-//                    }
-                        byte[] dataSpam = new byte[]{
-                                0x0B, 0x00 //Spam Packet ID
-                        };
-                        InPacket inPacket = new InPacket(data);
-                        out.add(inPacket);
-                        InPacket inPacketSpam = new InPacket(dataSpam);
-                        out.add(inPacketSpam);
+                    try {
+                        data = aesCrypto.decrypt(data, new IvParameterSpec(clientIV));
+                    } catch (GeneralSecurityException e) {
+                        LOGGER.error(Arrays.toString(e.getStackTrace()));
+                    }
+                    byte[] dataSpam = new byte[]{
+                            0x0B, 0x00 //Spam Packet ID
+                    };
+                    InPacket inPacket = new InPacket(data);
+                    out.add(inPacket);
+                    InPacket inPacketSpam = new InPacket(dataSpam);
+                    out.add(inPacketSpam);
                     } else {
-//                    try {
-//                        LOGGER.info("Decoder (Before Decryption): " + new String(data));
-//                        data = aesCrypto.decrypt(data, new IvParameterSpec(nettyUser.getClientIV()));
-//                        LOGGER.info("Decoder (After Decryption): " + new String(data));
-//                    } catch (GeneralSecurityException e) {
-//                        LOGGER.error(Arrays.toString(e.getStackTrace()));
-//                    }
+                    try {
+                        LOGGER.info("Decoder (Before Decryption): " + Packet.readableByteArray(data));
+                        data = aesCrypto.decrypt(data, new IvParameterSpec(nettyUser.getClientIV()));
+                    } catch (GeneralSecurityException e) {
+                        LOGGER.error(Arrays.toString(e.getStackTrace()));
+                    }
                         if(nettyUser.getUserDef() != null)
                             nettyUser.getUserDef().reduceSpamCnt();
                         InPacket inPacket = new InPacket(data);
+                        inPacket.setHeader(inPacket.decodeShort());
+                        LOGGER.info("Decoder (After Decryption): " + inPacket);
                         out.add(inPacket);
                     }
                 }

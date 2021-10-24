@@ -79,7 +79,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, InPacket inPacket) {
         NettyUser user = ctx.channel().attr(CLIENT_KEY).get();
-        short opcode = inPacket.decodeShort();
+        int opcode = inPacket.getHeader();
         PacketEnum pEnum = PacketEnum.checkHeaderByOP(opcode);
         if(pEnum != null){
             OutPacket oPacket = null;
