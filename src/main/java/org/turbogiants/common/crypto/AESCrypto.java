@@ -1,5 +1,7 @@
 package org.turbogiants.common.crypto;
 
+import org.turbogiants.server.connection.packet.PacketHandler;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -23,6 +25,15 @@ import java.security.spec.KeySpec;
 public final class AESCrypto {
 
     private static final int PASS_KEY_ITER = 4096;
+
+    private static AESCrypto instance = null;
+
+    public static AESCrypto getInstance(){
+        if(instance == null) {
+            instance = new AESCrypto();
+        }
+        return instance;
+    }
 
     /**
      * Date: --.--.--

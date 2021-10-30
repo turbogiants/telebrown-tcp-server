@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Oct 21, 2021 at 01:57 AM
+-- Generation Time: Oct 30, 2021 at 07:50 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS `messagehistory` (
   `messageID` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `senderID` varchar(64) NOT NULL,
   `recipientID` varchar(64) NOT NULL,
-  `message` varchar(1200) NOT NULL,
+  `message` longblob NOT NULL,
+  `checksum` varchar(64) NOT NULL,
   `TIMESTAMP` bigint(20) NOT NULL,
   `STATUS` smallint(6) NOT NULL DEFAULT '-1',
   PRIMARY KEY (`messageID`)

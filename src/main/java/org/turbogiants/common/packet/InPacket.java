@@ -70,6 +70,12 @@ public class InPacket extends Packet {
         return arr;
     }
 
+    public byte[] decodeArr() {
+        int len = decodeShort();
+        return decodeArr(len);
+    }
+
+
     public int decodeInt() {
         return byteBuf.readIntLE();
     }
@@ -82,14 +88,9 @@ public class InPacket extends Packet {
         return byteBuf.readShortLE();
     }
 
-    public String decodeString(int amount) {
-        byte[] bytes = decodeArr(amount);
-        return new String(bytes, StandardCharsets.UTF_8);
-    }
-
     public String decodeString() {
-        int amount = decodeShort();
-        return decodeString(amount);
+        byte[] bytes = decodeArr();
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     public long decodeLong() {

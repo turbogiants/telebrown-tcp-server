@@ -56,7 +56,7 @@ public class PacketHandler {
         return tcsComm2MessageAck.serialize(PacketEnum.TCS_COMM_2_MESSAGE_ACK);
     }
 
-    public OutPacket Handler_TCS_COMM_MESSAGE_2_REQ(NettyUser nettyUser, InPacket inPacket){
+    public OutPacket Handler_TCS_COMM_2_MESSAGE_REQ(NettyUser nettyUser, InPacket inPacket){
         TCS_COMM_2_MESSAGE_REQ tcsComm2MessageReq = new TCS_COMM_2_MESSAGE_REQ();
         tcsComm2MessageReq.deserialize(inPacket);
         ArrayList<MessageInfo> arrayList = null;
@@ -102,7 +102,7 @@ public class PacketHandler {
         messageInfo.setUnixTime(System.currentTimeMillis()); // change time checking from client to server to make it more accurate
         if(messageInfo.getDestID().length() != 16 ||
                 messageInfo.getOwnerID().length() != 16 ||
-                messageInfo.getMessage().isEmpty()){
+                messageInfo.getStrSha256().isEmpty()){
             tcsCommMessageAck.setOK(TCS_COMM_MESSAGE_ACK.Status.MESSAGE_SENT_FAILED);
         } else {
             if(SQL_CORE.addMessage(messageInfo)){

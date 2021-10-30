@@ -67,18 +67,16 @@ public class PacketDecoder extends ByteToMessageDecoder {
                     nettyUser.setStoredLength(-1);
 
                     if (isSpam) {
-                    try {
-                        data = aesCrypto.decrypt(data, new IvParameterSpec(clientIV));
-                    } catch (GeneralSecurityException e) {
-                        LOGGER.error(Arrays.toString(e.getStackTrace()));
-                    }
-                    byte[] dataSpam = new byte[]{
-                            0x0B, 0x00 //Spam Packet ID
-                    };
-                    InPacket inPacket = new InPacket(data);
-                    out.add(inPacket);
-                    InPacket inPacketSpam = new InPacket(dataSpam);
-                    out.add(inPacketSpam);
+                        try {
+                            LOGGER.info("Decoder (Before Decryption): " + Packet.readableByteArray(data));
+                            data = aesCrypto.decrypt(data, new IvParameterSpec(clientIV));
+                        } catch (GeneralSecurityException e) {
+                            LOGGER.error(Arrays.toString(e.getStackTrace()));
+                        }
+                        InPacket inPacket = new InPacket(data);
+                        inPacket.setHeader(inPacket.decodeShort());
+                        LOGGER.info("Decoder (After Decryption): " + inPacket);
+                        out.add(inPacket);
                     } else {
                     try {
                         LOGGER.info("Decoder (Before Decryption): " + Packet.readableByteArray(data));

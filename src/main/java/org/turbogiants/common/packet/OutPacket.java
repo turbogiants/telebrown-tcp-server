@@ -55,6 +55,7 @@ public class OutPacket extends Packet {
     }
 
     public void encodeArr(byte[] bArr) {
+        encodeShort((short) bArr.length);
         byteBuf.writeBytes(bArr);
     }
 
@@ -98,14 +99,6 @@ public class OutPacket extends Packet {
         if (stringLen > Short.MAX_VALUE) {
             LOGGER.error("Tried to encode a string that is too big.");
             return;
-        }
-        encodeShort((short) stringLen);
-        encodeString(s, (short) stringLen);
-    }
-
-    public void encodeString(String s, short length) {
-        if (s == null) {
-            s = "";
         }
         if (s.length() > 0) {
             encodeArr(s.getBytes(StandardCharsets.UTF_8));

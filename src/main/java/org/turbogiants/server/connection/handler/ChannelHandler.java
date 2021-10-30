@@ -121,7 +121,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                 }
                 case TCS_COMM_2_MESSAGE_REQ:
                 {
-                    oPacket = PACKET_HANDLER.Handler_TCS_COMM_MESSAGE_2_REQ(user, inPacket);
+                    oPacket = PACKET_HANDLER.Handler_TCS_COMM_2_MESSAGE_REQ(user, inPacket);
                     break;
                 }
                 case TCS_COMM_3_MESSAGE_REQ:
