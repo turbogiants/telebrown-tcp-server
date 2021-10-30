@@ -50,7 +50,10 @@ public class TCS_COMM_MESSAGE_ACK extends TCS_COMM_MESSAGE_NOT{
         outPacket.encodeString(messageInfo.getDestID());
         outPacket.encodeString(messageInfo.getOwnerID());
         outPacket.encodeLong(messageInfo.getUnixTime());
-        outPacket.encodeString(messageInfo.getMessage());
+        outPacket.encodeString(messageInfo.getStrSha256());
+
+        // As server won't have the test keys it will only get it by byteArray
+        outPacket.encodeArr(messageInfo.getByteArrMessage());
         return outPacket;
     }
 
@@ -61,7 +64,10 @@ public class TCS_COMM_MESSAGE_ACK extends TCS_COMM_MESSAGE_NOT{
         messageInfo.setDestID(inPacket.decodeString());
         messageInfo.setOwnerID(inPacket.decodeString());
         messageInfo.setUnixTime(inPacket.decodeLong());
-        messageInfo.setMessage(inPacket.decodeString());
+        messageInfo.setStrSha256(inPacket.decodeString());
+
+        // As server won't have the test keys it will only get it by byteArray
+        messageInfo.setByteArrMessage(inPacket.decodeArr());
         this.messageInfo = messageInfo;
     }
 

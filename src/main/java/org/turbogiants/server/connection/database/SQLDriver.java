@@ -3,10 +3,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.turbogiants.common.utility.Config;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 
 /**
@@ -53,6 +50,28 @@ public class SQLDriver {
         try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
             PreparedStatement query = con.prepareStatement(statement);
         ){
+            affected = query.executeUpdate();
+        }catch(SQLException ex){
+            LOGGER.error(ex.getLocalizedMessage());
+            affected = 0;
+            bOK = false;
+        }
+        return bOK;
+    }
+
+    /**
+     * Uses executeUpdate: Returns an integer representing the number of rows affected by the SQL statement.
+     * Use this method if you are using INSERT, DELETE, or UPDATE SQL statements.
+     * @param statement: SQL statement that needs to be executed.
+     * @param affected: Pass-by-Value Integer object - passes the number of rows affected.
+     * @return boolean: If the execution is successful or not.
+     */
+    public static boolean query_blob(String statement, Integer affected, Blob blob){
+        boolean bOK = true;
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+            PreparedStatement query = con.prepareStatement(statement);
+        ){
+            query.setBlob(1, blob);
             affected = query.executeUpdate();
         }catch(SQLException ex){
             LOGGER.error(ex.getLocalizedMessage());

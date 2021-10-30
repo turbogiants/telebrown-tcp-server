@@ -10,6 +10,8 @@ public class InPacket extends Packet {
 
     private final ByteBuf byteBuf;
 
+    private short op;
+
     public InPacket(ByteBuf data) {
         super(data.array());
         this.byteBuf = data.copy();
@@ -21,6 +23,20 @@ public class InPacket extends Packet {
 
     public InPacket(byte[] data) {
         this(Unpooled.copiedBuffer(data));
+    }
+
+    public InPacket(byte[] data, short op) {
+        this(Unpooled.copiedBuffer(data));
+        this.op = op;
+    }
+
+    @Override
+    public int getHeader() {
+        return op;
+    }
+
+    public void setHeader(short op) {
+        this.op = op;
     }
 
     @Override
@@ -54,6 +70,12 @@ public class InPacket extends Packet {
         return arr;
     }
 
+    public byte[] decodeArr() {
+        int len = decodeShort();
+        return decodeArr(len);
+    }
+
+
     public int decodeInt() {
         return byteBuf.readIntLE();
     }
@@ -66,19 +88,9 @@ public class InPacket extends Packet {
         return byteBuf.readShortLE();
     }
 
-    public String decodeString(int amount) {
-        byte[] bytes = decodeArr(amount);
-        return new String(bytes, StandardCharsets.UTF_8);
-    }
-
     public String decodeString() {
-        int amount = decodeShort();
-        return decodeString(amount);
-    }
-
-    @Override
-    public String toString() {
-        return readableByteArray(Arrays.copyOfRange(getData(), getData().length - getUnreadAmount(), getData().length)); // Substring after copy of range xd
+        byte[] bytes = decodeArr();
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     public long decodeLong() {
@@ -91,6 +103,12 @@ public class InPacket extends Packet {
 
     public void release() {
         byteBuf.release();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s, %s/0x%s\t| %s", PacketEnum.checkHeaderByOP(op), op, Integer.toHexString(op).toUpperCase()
+                , readableByteArray(Arrays.copyOfRange(getData(), 2, getData().length)));
     }
 
 }

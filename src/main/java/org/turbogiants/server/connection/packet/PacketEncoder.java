@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import org.turbogiants.common.packet.OutPacket;
+import org.turbogiants.common.packet.Packet;
 import org.turbogiants.server.user.NettyUser;
 import org.turbogiants.common.crypto.AESCrypto;
 import org.apache.logging.log4j.LogManager;
@@ -37,9 +38,9 @@ public final class PacketEncoder extends MessageToByteEncoder<OutPacket> {
                 nettyUser.acquireEncoderState();
                 byte[] sIV = AESCrypto.generateIV();
                 byte[] cIV = AESCrypto.generateIV();
-                LOGGER.info("Encoder (Before Encryption): " + new String(data));
-                //data = aesCrypto.encrypt(data, sIV);
-                LOGGER.info("Encoder (After Encryption): " + new String(data));
+                LOGGER.info("Encoder (Before Encryption): " + outPacket);
+                data = aesCrypto.encrypt(data, sIV);
+                LOGGER.info("Encoder (After Encryption): " + Packet.readableByteArray(data));
                 nettyUser.setServerIV(sIV);
                 nettyUser.setClientIV(cIV);
 

@@ -2,7 +2,7 @@ package org.turbogiants.server.user;
 
 public class UserDef {
 
-    public static final int SPAM_THRESHOLD = 5;
+    public static final int SPAM_THRESHOLD = 10;
 
     private String UID = "0XDEADC0DE";
 

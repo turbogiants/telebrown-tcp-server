@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.turbogiants.common.MessageInfo;
 
+import javax.sql.rowset.serial.SerialBlob;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -20,22 +21,30 @@ public class SQLCore extends SQLDriver{
     }
 
     public boolean addMessage(MessageInfo messageInfo){
-        String statement = String.format("INSERT INTO messagehistory(senderID, recipientID, message, TIMESTAMP) VALUES(\"%s\", \"%s\", \"%s\", %d)",
-                messageInfo.getOwnerID(),
-                messageInfo.getDestID(),
-                messageInfo.getMessage(),
-                messageInfo.getUnixTime()
-        );
-        Integer affectedRows = 0;
-        return query(statement, affectedRows);
+        try {
+            Blob blob = null;
+            blob = new SerialBlob(messageInfo.getByteArrMessage());
+            String statement = String.format("INSERT INTO messagehistory(senderID, recipientID, message, checksum, TIMESTAMP) VALUES(\"%s\", \"%s\", ?, \"%s\", %d)",
+                    messageInfo.getOwnerID(),
+                    messageInfo.getDestID(),
+                    messageInfo.getStrSha256(),
+                    messageInfo.getUnixTime()
+            );
+            Integer affectedRows = 0;
+
+            return query_blob(statement, affectedRows, blob);
+        } catch (SQLException e) {
+            LOGGER.error(e.getLocalizedMessage());
+        }
+
+        return false;
     }
 
     public boolean updateMessageStatus(MessageInfo messageInfo){
-        String statement = String.format("UPDATE messagehistory SET STATUS = 0 WHERE senderID = \"%s\" AND recipientID = \"%s\" AND message = \"%s\" AND TIMESTAMP = %d",
+        String statement = String.format("UPDATE messagehistory SET STATUS = 0 WHERE senderID = \"%s\" AND recipientID = \"%s\" AND checksum = \"%s\"",
                 messageInfo.getOwnerID(),
                 messageInfo.getDestID(),
-                messageInfo.getMessage(),
-                messageInfo.getUnixTime()
+                messageInfo.getStrSha256()
         );
         Integer affectedRows = 0;
         return query(statement, affectedRows);
@@ -53,7 +62,9 @@ public class SQLCore extends SQLDriver{
                 MessageInfo messageInfo = new MessageInfo();
                 messageInfo.setOwnerID(resultSet.getString("senderID"));
                 messageInfo.setDestID(resultSet.getString("recipientID"));
-                messageInfo.setMessage(resultSet.getString("message"));
+                Blob blob = resultSet.getBlob("message");
+                messageInfo.setByteArrMessage(blob.getBytes(1, (int)blob.length()));
+                messageInfo.setStrSha256(resultSet.getString("checksum"));
                 messageInfo.setUnixTime(resultSet.getLong("TIMESTAMP"));
                 messageInfos.add(messageInfo);
             }
